@@ -68,7 +68,7 @@ export default function LoginEnfermeiro() {
                     <p>Esqueceu a senha?</p>
                 </Link>
 
-                <Link href="" className="border-b-2 border-[#FFB8B8] text-center pb-2" >
+                <Link href="/cadastroEnfermeiro" className="border-b-2 border-[#FFB8B8] text-center pb-2" >
                     <p>Cadastre-se</p>
                 </Link>
             </div>
