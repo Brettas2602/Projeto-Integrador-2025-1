@@ -79,6 +79,8 @@ func main() {
 	PacienteController := controller.NewPacienteController(PacienteUseCase)
 
 	server.GET("/paciente/:pacienteCpf", PacienteController.GetPacienteByCpf)
+	server.GET("/paciente/getbyname/:pacienteNome", PacienteController.GetAllPacienteByName)
+	server.GET("/paciente/getbyage/:idadeMin/:idadeMax", PacienteController.GetAllPacienteByAge)
 	server.POST("/paciente", PacienteController.CreatePaciente)
 
 	server.Run(":8000")
