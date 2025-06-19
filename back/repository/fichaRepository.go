@@ -17,16 +17,17 @@ func NewFichaRepository(conn *sql.DB) FichaRepository {
 }
 
 func (fr *FichaRepository) CreateFicha(ficha *model.FichaCitopatologica) (*model.FichaCitopatologica, error) {
-	query, err := fr.connection.Prepare("INSERT INTO ficha_citopatologica (paciente_id, numero_protocolo) VALUES ($1, $2) RETURNING id, data_criacao")
+	query, err := fr.connection.Prepare("INSERT INTO ficha_citopatologica (paciente_id, numero_protocolo, risco) VALUES ($1, $2, $3) RETURNING id, data_criacao")
 	if err != nil {
 		return nil, err
 	}
 
 	defer query.Close()
 
-	err = query.QueryRow(ficha.PacienteID, ficha.NumeroProtocolo).Scan(
+	err = query.QueryRow(ficha.PacienteID, ficha.NumeroProtocolo, ficha.Risco).Scan(
 		&ficha.ID,
 		&ficha.DataCriacao,
+		&ficha.Risco,
 	)
 	if err != nil {
 		return nil, err
@@ -57,6 +58,7 @@ func (fr *FichaRepository) GetFichasByPaciente(idPaciente int) ([]model.FichaCit
 			&fichaObj.PacienteID,
 			&fichaObj.DataCriacao,
 			&fichaObj.NumeroProtocolo,
+			&fichaObj.Risco,
 		)
 
 		if err != nil {
@@ -79,7 +81,7 @@ func (fr *FichaRepository) DeleteFichaByID(id *int) error {
 	result, err := query.Exec(id)
 
 	if err != nil {
-		return err 
+		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
@@ -89,7 +91,7 @@ func (fr *FichaRepository) DeleteFichaByID(id *int) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("Nenhuma ficha com o id %v foi encontrada", id )
+		return fmt.Errorf("Nenhuma ficha com o id %v foi encontrada", id)
 	}
 
 	return nil
