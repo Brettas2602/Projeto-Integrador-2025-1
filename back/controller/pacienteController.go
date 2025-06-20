@@ -115,6 +115,13 @@ func (pc *PacienteController) GetAllPacienteByAge(ctx *gin.Context){
 		return
 	}
 
+	if idadeInicialPaciente > idadeFinalPaciente{
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message":"Idade inicial não pode ser maior que a final",
+		})
+		return
+	}
+
 	pacientes, err := pc.useCase.GetAllPacienteByAge(idadeInicialPaciente, idadeFinalPaciente)
 		if err != nil{
 			ctx.JSON(http.StatusNotFound, gin.H{
@@ -131,4 +138,50 @@ func (pc *PacienteController) GetAllPacienteByAge(ctx *gin.Context){
 		}
 
 	ctx.JSON(http.StatusOK, pacientes)
+}
+
+func (pc *PacienteController) GetAllPacienteByRisk(ctx *gin.Context){
+	risco := ctx.Param("risco")
+	if strings.TrimSpace(risco) == ""{
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Risco não pode ser nulo",
+		})
+		return
+	}
+
+	pacientes, err := pc.useCase.GetAllPacienteByRisk(risco)
+		if err != nil{
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"message":err.Error(),
+			})
+			return
+		}
+
+		if pacientes == nil{
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"message": "Item não encontrado na base de dados",
+			})
+			return
+		}
+
+	ctx.JSON(http.StatusOK, pacientes)
+}
+
+func (pc *PacienteController) GetCountPacienteByRisk(ctx *gin.Context){
+	riscos, err := pc.useCase.GetCountPacienteByRisk()
+	if err != nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+				"message":err.Error(),
+			})
+			return
+	}
+
+	if riscos == nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+				"message": "Item não encontrado na base de dados",
+			})
+			return
+	}
+
+	ctx.JSON(http.StatusOK, riscos)
 }

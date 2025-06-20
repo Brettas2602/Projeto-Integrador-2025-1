@@ -65,7 +65,8 @@ CREATE TABLE ficha_citopatologica (
     id SERIAL PRIMARY KEY,
     paciente_id INT REFERENCES paciente(id) ON DELETE CASCADE,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    numero_protocolo INT
+    numero_protocolo INT,
+    risco VARCHAR(5)
 );
 
 -- Tabela: dados_anamnese

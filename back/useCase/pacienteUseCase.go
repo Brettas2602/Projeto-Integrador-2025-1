@@ -104,8 +104,8 @@ func (pu *PacienteUseCase) GetAllPacienteByName(nome string) ([]model.Paciente, 
 
 	for i, paciente := range pacientes{
 		fichas, err := pu.fichaRepository.GetFichasByPaciente(*paciente.ID)
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
 	}
 
 	if fichas != nil {
@@ -146,36 +146,87 @@ func (pu *PacienteUseCase) GetAllPacienteByAge(idadeInicial, idadeFinal int) ([]
 
 	for i, paciente := range pacientes{
 		fichas, err := pu.fichaRepository.GetFichasByPaciente(*paciente.ID)
-	if err != nil {
-		return nil, err
-	}
+		if err != nil {
+			return nil, err
+		}
 
-	if fichas != nil {
-		for i := range fichas {
-			fichas[i].DadosAnamnese, err = pu.anamneseRepository.GetDadosAnamneseByFichaID(*fichas[i].ID)
-			if err != nil && err != sql.ErrNoRows {
-				return nil, err
-			}
-	
-			fichas[i].ExameClinico, err = pu.exameClinicoRepository.GetExameClinicoByFichaID(*fichas[i].ID)
-			if err != nil && err != sql.ErrNoRows {
-				return nil, err
-			}
-	
-			fichas[i].IdentificacaoLaboratorio, err = pu.identificacaoLabRepository.GetIdentificacaoLabByFichaID(*fichas[i].ID)
-			if err != nil && err != sql.ErrNoRows {
-				return nil, err
-			}
-	
-			fichas[i].Resultado, err = pu.resultadoRepository.GetResultadoByFichaID(*fichas[i].ID)
-			if err != nil && err != sql.ErrNoRows {
-				return nil, err
+		if fichas != nil {
+			for i := range fichas {
+				fichas[i].DadosAnamnese, err = pu.anamneseRepository.GetDadosAnamneseByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].ExameClinico, err = pu.exameClinicoRepository.GetExameClinicoByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].IdentificacaoLaboratorio, err = pu.identificacaoLabRepository.GetIdentificacaoLabByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].Resultado, err = pu.resultadoRepository.GetResultadoByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
 			}
 		}
-	}
 
 		pacientes[i].Fichas = &fichas
 	}
 
 	return pacientes, nil
+}
+
+func (pu *PacienteUseCase) GetAllPacienteByRisk(risco string) ([]model.Paciente, error){
+	pacientes, err := pu.repository.GetAllPacienteByRisk(risco)
+	if err != nil{
+		return nil, err
+	}
+
+	for i, paciente := range pacientes{
+		fichas, err := pu.fichaRepository.GetFichasByPaciente(*paciente.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		if fichas != nil {
+			for i := range fichas {
+				fichas[i].DadosAnamnese, err = pu.anamneseRepository.GetDadosAnamneseByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].ExameClinico, err = pu.exameClinicoRepository.GetExameClinicoByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].IdentificacaoLaboratorio, err = pu.identificacaoLabRepository.GetIdentificacaoLabByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+		
+				fichas[i].Resultado, err = pu.resultadoRepository.GetResultadoByFichaID(*fichas[i].ID)
+				if err != nil && err != sql.ErrNoRows {
+					return nil, err
+				}
+			}
+		}
+
+		pacientes[i].Fichas = &fichas
+	}
+
+	return pacientes, nil
+}
+
+func (pu *PacienteUseCase) GetCountPacienteByRisk()([]model.RiscoQuantidade, error){
+	riscos, err := pu.repository.GetCountPacienteByRisk()
+	if err != nil{
+		return nil, err
+	}
+
+	return riscos, nil
 }
