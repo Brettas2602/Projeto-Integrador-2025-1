@@ -81,6 +81,9 @@ func main() {
 	server.GET("/paciente/:pacienteCpf", PacienteController.GetPacienteByCpf)
 	server.GET("/paciente/getbyname/:pacienteNome", PacienteController.GetAllPacienteByName)
 	server.GET("/paciente/getbyage/:idadeMin/:idadeMax", PacienteController.GetAllPacienteByAge)
+	server.GET("/paciente/getbyrisk/:risco", PacienteController.GetAllPacienteByRisk)
+	server.GET("/paciente/getcountbyrisk", PacienteController.GetCountPacienteByRisk)
+	server.GET("/paciente/resultadosbyid/:pacienteId", PacienteController.GetResultadosByPacienteId)
 	server.POST("/paciente", PacienteController.CreatePaciente)
 
 	server.Run(":8000")

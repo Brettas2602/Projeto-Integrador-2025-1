@@ -230,3 +230,29 @@ func (pu *PacienteUseCase) GetCountPacienteByRisk()([]model.RiscoQuantidade, err
 
 	return riscos, nil
 }
+
+func (pu *PacienteUseCase) GetResultadosByPacienteId(id int) ([]model.ResultadoExameCitopatologico, error){
+	fichas, err := pu.fichaRepository.GetFichasByPaciente(id)
+	if err != nil{
+		return nil, err
+	}
+
+	var resultadosFichas []model.ResultadoExameCitopatologico
+
+	if fichas != nil{
+		for i := range fichas{
+			resultados,err := pu.resultadoRepository.GetResultadoByFichaID(*fichas[i].ID)
+			if err !=  nil{
+				return nil, err
+			}
+			
+			resultadosFichas = append(resultadosFichas, *resultados)
+		}
+	}
+
+	if len(resultadosFichas) == 0{
+		return nil, nil
+	}
+
+	return resultadosFichas, nil
+}

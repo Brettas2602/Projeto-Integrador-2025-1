@@ -50,9 +50,9 @@ export default function LoginMedico() {
             </div>
 
             <p className="font-bold text-xl border-b-2 border-[#FFB8B8] pb-2">Médico, faça o login!</p>
-            <input type="number" placeholder="CPF" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none" onChange={(e) => setCpf(e.target.value)}/>
+            <input type="number" placeholder="CPF" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setCpf(e.target.value)}/>
 
-            <input type="text" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none" onChange={(e) => setPassword(e.target.value)}/>
+            <input type="text" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setPassword(e.target.value)}/>
 
             {message && (
                 <p className="text-red-500 bg-red-100 p-1 rounded-md">{message}</p>
