@@ -9,6 +9,7 @@ type Paciente struct {
 	NomeMae        *string                `json:"nome_mae"`
 	Apelido        *string                `json:"apelido"`
 	CPF            *string                `json:"cpf"`
+	Senha          *string                `json:"senha"`
 	Nacionalidade  *string                `json:"nacionalidade"`
 	DataNascimento *DateOnly              `json:"data_nascimento"`
 	Cor            *string                `json:"cor"`

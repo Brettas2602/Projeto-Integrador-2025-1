@@ -185,3 +185,32 @@ func (pc *PacienteController) GetCountPacienteByRisk(ctx *gin.Context){
 
 	ctx.JSON(http.StatusOK, riscos)
 }
+
+func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context){
+	pacienteIdStr := ctx.Param("pacienteId")
+	pacienteId, err := strconv.Atoi(pacienteIdStr)
+	
+	if err != nil || pacienteId <= 0{
+		ctx.JSON(http.StatusBadRequest, gin.H{
+		"message": "Id inválido",
+		})
+		return
+	}
+
+	resultadosFichas, err := pc.useCase.GetResultadosByPacienteId(pacienteId)
+	if err != nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+				"message":err.Error(),
+			})
+			return
+	}
+
+	if resultadosFichas == nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message":"Item não encontrado na base de dados",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resultadosFichas)
+}

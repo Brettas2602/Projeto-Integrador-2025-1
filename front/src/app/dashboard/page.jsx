@@ -9,8 +9,48 @@ import Chart from "react-google-charts";
 import RecentPacient from "@/components/RecentPacient";
 import { pacients } from "@/dados ficticios/dadosFicticios";
 import Link from "next/link";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
+
+    const [chartData, setChartData] = useState([
+    ["Nível de risco", "Número de pacientes"],
+    ["Alto", 0],
+    ["Médio", 0],
+    ["Baixo", 0]
+  ]);
+
+  useEffect(() => {
+        const fetchData = async () => {
+        try {
+            const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
+
+            const riscos = {
+            "Alto": 0,
+            "Médio": 0,
+            "Baixo": 0
+            };
+
+            res.data.forEach(item => {
+            if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
+            if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
+            if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
+            });
+
+            setChartData([
+            ["Nível de risco", "Número de pacientes"],
+            ["Alto", riscos["Alto"]],
+            ["Médio", riscos["Médio"]],
+            ["Baixo", riscos["Baixo"]]
+            ]);
+        } catch (error) {
+            console.error("Erro ao buscar dados:", error);
+        }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <div className="w-full bg-[#F9F5F5] flex flex-col">
@@ -35,7 +75,7 @@ export default function Dashboard() {
                 </div>
             </section>
 
-            <section className="h-[90vh] grid gap-5 px-8 py-5 justify-items-center">
+            <section className="min-h-[90vh] grid gap-5 px-8 py-5 justify-items-center">
 
                 <div className="flex justify-between items-center flex-wrap ldx:items-stretch flex-row w-[95%] sm:w-[90%] ldx:w-full gap-4 ldx:gap-0">
 
@@ -101,14 +141,10 @@ export default function Dashboard() {
                                 Alto
                             </div>
                         </div>
-                        <Chart className="mt-3"
+                        <Chart
+                            className="mt-3"
                             chartType="PieChart"
-                            data={[
-                                ["Nível de risco", "Número de pacientes"],
-                                ["Alto", 4],
-                                ["Médio", 8],
-                                ["Baixo", 11]
-                            ]}
+                            data={chartData}
                             options={{
                                 pieHole: 0.6,
                                 pieSliceText: "none",
