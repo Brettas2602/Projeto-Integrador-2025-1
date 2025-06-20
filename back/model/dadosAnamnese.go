@@ -3,7 +3,7 @@ package model
 type DadosAnamnese struct {
 	ID                   *int      `json:"id"`
 	FichaID              *int      `json:"ficha_id"`
-	MotivoExame          *int      `json:"motivo_exame"`
+	MotivoExame          *string   `json:"motivo_exame"`
 	DataExamePreventivo  *DateOnly `json:"data_exame_preventivo"`
 	Diu                  *bool     `json:"diu"`
 	Gravida              *bool     `json:"gravida"`
