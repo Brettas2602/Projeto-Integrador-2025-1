@@ -1,5 +1,6 @@
 "use client"
 
+import { useUser } from "@/context/userContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,6 +12,8 @@ export default function CadastroMedico() {
   const [cpf, setCpf] = useState("");
   const [senha, setSenha] = useState("");
   const [senhaConfirmada, setSenhaConfirmada] = useState("");
+
+  const {setMedico} = useUser()
 
   const router = useRouter()
 
@@ -24,7 +27,6 @@ export default function CadastroMedico() {
     }
 
     try {
-        // Aqui você poderia enviar os dados para seu backend com fetch/axios
         const {data: medico} = await axios.post("http://localhost:8000/medico", {
             "id_ubs": 1,
             "crm": crm,
@@ -33,6 +35,8 @@ export default function CadastroMedico() {
             "senha": senha,
             "nome": nome,
         })
+
+        setMedico(medico)
     
         console.log("Dados do médico:", medico);
         alert("Cadastro enviado com sucesso!");

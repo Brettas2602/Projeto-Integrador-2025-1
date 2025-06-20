@@ -1,5 +1,6 @@
 "use client"
 
+import { useUser } from "@/context/userContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,6 +12,8 @@ export default function CadastroEnfermeiro() {
   const [cpf, setCpf] = useState("");
   const [senha, setSenha] = useState("");
   const [senhaConfirmada, setSenhaConfirmada] = useState("");
+
+  const {setEnfermeiro} = useUser()
 
   const router = useRouter();
 
@@ -31,6 +34,8 @@ export default function CadastroEnfermeiro() {
         "senha": senha,
         "nome": nome,
       });
+
+      setEnfermeiro(enfermeiro)
 
       console.log("Dados do enfermeiro:", enfermeiro);
       alert("Cadastro enviado com sucesso!");

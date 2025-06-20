@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { FiArrowLeft } from "react-icons/fi";
 import { useRouter } from "next/navigation"
+import { useUser } from "@/context/userContext";
 
 export default function LoginMedico() {
 
@@ -12,7 +13,13 @@ export default function LoginMedico() {
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
 
+    const {medico, setMedico} = useUser()
+
     const router = useRouter()
+
+    useEffect(() => {
+        if (medico) router.replace("dashboard")
+    }, [])
 
     async function checkUserData() {
         try {
@@ -23,6 +30,8 @@ export default function LoginMedico() {
                 setMessage("Usuário ou senha incorretos")
                 return
             }
+
+            setMedico(data)
     
             router.replace("dashboard")
         } catch {
