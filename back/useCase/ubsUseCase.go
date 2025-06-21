@@ -30,3 +30,12 @@ func (uu *UbsUseCase) GetUbsByID(id int) (*model.Ubs, error) {
 
 	return ubs, nil
 }
+
+func (uu *UbsUseCase) GetAllUbs()([]model.Ubs, error){
+	ubs, err := uu.repository.GetAllUbs()
+	if err != nil{
+		return nil,err
+	}
+
+	return ubs, nil
+}
