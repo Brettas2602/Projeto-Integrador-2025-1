@@ -37,5 +37,5 @@ func (uu *UbsUseCase) GetAllUbs()([]model.Ubs, error){
 		return nil,err
 	}
 
-	return ubs, nil
+	return ubs, nil
 }

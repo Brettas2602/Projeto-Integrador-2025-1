@@ -70,5 +70,5 @@ func (uc *UbsController) GetAllUbs(ctx *gin.Context){
 			return
 	}
 
-	ctx.JSON(http.StatusOK, ubs)
+	ctx.JSON(http.StatusOK, ubs)
 }

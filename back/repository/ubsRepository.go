@@ -103,5 +103,5 @@ func (ur *UbsRepository) GetAllUbs()([]model.Ubs, error){
 		return nil, err
 	}
 
-	return ubsList, nil
+	return ubsList, nil
 }
