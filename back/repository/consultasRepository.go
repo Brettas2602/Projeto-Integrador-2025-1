@@ -71,3 +71,39 @@ func (cr *ConsultasRepository) DeleteConsultaByID (id int) error {
 	}
 	return nil
 }
+
+func (cr *ConsultasRepository) GetAllConsultas() ([]model.Consultas, error){
+	rows, err := cr.connection.Query("SELECT * FROM consultas")
+	if err != nil{
+		return nil, err
+	}
+
+	var consultasList []model.Consultas
+
+	for rows.Next(){
+		var consulta model.Consultas
+
+		err:= rows.Scan(
+			&consulta.ID,
+			&consulta.PacienteID,
+			&consulta.Data,
+			&consulta.UbsID,
+		)
+
+		if err != nil{
+			if err == sql.ErrNoRows{
+				return nil, nil
+			}
+
+			return nil, err
+		}
+
+		consultasList = append(consultasList, consulta)
+	}
+
+	if err = rows.Err(); err != nil{
+		return nil, err
+	}
+
+	return consultasList, nil
+}

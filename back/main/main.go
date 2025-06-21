@@ -35,6 +35,13 @@ func main() {
 
 	server.GET("/ubs/:ubsId", UbsController.GetUbsByID)
 
+	ConsultaRepository := repository.NewConsultasRepository(dbConnection)
+	ConsultaUseCase := useCase.NewConsultaUseCase(ConsultaRepository)
+	ConsultaController := controller.NewConsultaController(ConsultaUseCase)
+
+	server.GET("/consulta/getallconsultas", ConsultaController.GetAllConsultas)
+	server.POST("/consulta/createconsulta", ConsultaController.CreateConsulta)
+
 	MedicoRepository := repository.NewMedicoRepository(dbConnection)
 	MedicoUseCase := useCase.NewMedicoUseCase(MedicoRepository, UbsRepository)
 	MedicoController := controller.NewMedicoController(MedicoUseCase)
