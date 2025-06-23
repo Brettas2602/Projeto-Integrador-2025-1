@@ -96,6 +96,27 @@ func (pc *PacienteController) GetPacienteByCpf(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, paciente)
 }
 
+func (pc *PacienteController) GetLastFourPacientes(ctx *gin.Context){
+    pacientes, err := pc.useCase.GetLastFourPacientes()
+        if err != nil{
+            ctx.JSON(http.StatusNotFound, gin.H{
+                "message":err.Error(),
+            })
+            return
+        }
+
+
+        if pacientes == nil{
+            ctx.JSON(http.StatusNotFound, gin.H{
+                "message": "Item não encontrado na base de dados",
+            })
+            return
+        }
+
+
+    ctx.JSON(http.StatusOK, pacientes)
+}
+
 func (pc *PacienteController) GetAllPacienteByName(ctx *gin.Context){
 	pacienteNome := ctx.Param("pacienteNome")
 	if strings.TrimSpace(pacienteNome) == ""{
@@ -241,4 +262,28 @@ func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context){
 	}
 
 	ctx.JSON(http.StatusOK, resultadosFichas)
+}
+
+func (pc *PacienteController) GetLastConsultationByIdPaciente(ctx *gin.Context) {
+    pacienteIdStr := ctx.Param("pacienteId")
+    pacienteId, err := strconv.Atoi(pacienteIdStr)
+
+    if pacienteId <= 0 || err != nil{
+        ctx.JSON(http.StatusBadRequest, gin.H{
+            "message": "Id inválido",
+        })
+        return
+    }
+
+
+    consulta, err := pc.useCase.GetLastConsultationByIdPaciente(pacienteId)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{
+            "message": err.Error(),
+        })
+        return
+    }
+
+
+    ctx.JSON(http.StatusOK, consulta)
 }
