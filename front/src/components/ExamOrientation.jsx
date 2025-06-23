@@ -14,8 +14,8 @@ export default function ExamResult({ exam }) {
 
             <div onClick={() => setMostrarPopup(true)} className="bg-[#FFF1F1] w-4/5 p-4 rounded-xl flex justify-between shadow-md shadow-blue-500">
                 <div>
-                    <p>{exam.name}</p>
-                    <p>{exam.date} - {exam.hour} </p>
+                    <p>Exame citopatológico </p>
+                    <p>{exam.data_resultado}</p>
                 </div>
 
                 <Link href={""}  className="self-center">
@@ -44,7 +44,7 @@ export default function ExamResult({ exam }) {
 
                 <div className="w-full flex justify-center">
                     <div className="w-4/5 mt-7">
-                        <p className="text-justify">{exam.orientation}</p>
+                        <p className="text-justify">{exam.observacoes_gerais}</p>
                     </div>
                 </div>
                 </div>
