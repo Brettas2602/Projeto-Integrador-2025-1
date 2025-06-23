@@ -124,6 +124,6 @@ func (fr *FichaRepository) GetLastFichaWithRiskByIdPaciente(idPaciente int) (*mo
 		return nil, err
 	}
 
-	return &fichaObj, nil
+	return &fichaObj, nil
 
 }

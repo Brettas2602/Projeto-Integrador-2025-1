@@ -364,5 +364,5 @@ func (pu *PacienteUseCase) GetLastFichaWithRiskByIdPaciente(id int) (*model.Fich
 		return nil, err
 	}
 
-	return ficha, nil
+	return ficha, nil
 }
