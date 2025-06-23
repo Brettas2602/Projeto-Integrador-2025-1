@@ -12,6 +12,7 @@ export default function Form() {
         id_ubs: 1,
         cartao_sus: "",
         nome: "",
+        senha: "",
         nome_mae: "",
         apelido: "",
         cpf: "",
@@ -34,6 +35,7 @@ export default function Form() {
 
     const [ficha, setFicha] = useState({
         numero_protocolo: Math.round(Math.random() * Math.pow(10, 9)).toString(),
+        risco: "",
         dados_anamnese: {
             motivo_exame: "",
             data_exame_preventivo: null,
@@ -80,6 +82,7 @@ export default function Form() {
     const handlePacienteChange = (e) => {
         const { name, value } = e.target;
         setPaciente(prev => ({ ...prev, [name]: value }));
+        console.log(paciente)
     };
 
     const handleEnderecoChange = (e) => {
@@ -93,6 +96,7 @@ export default function Form() {
     const handleFichaChange = (e) => {
         const { name, value } = e.target;
         setFicha(prev => ({ ...prev, [name]: value }));
+        console.log(ficha)
     };
 
     const handleAnamneseChange = (e) => {
@@ -182,9 +186,10 @@ export default function Form() {
                     <Input title="Cartão Sus" name="cartao_sus" value={paciente.cartao_sus} onChange={handlePacienteChange} className="w-1/3" />
                     <Input title="Nome Completo da Mulher" name="nome" value={paciente.nome} onChange={handlePacienteChange} />
                     <Input title="Nome Completo da Mãe" name="nome_mae" value={paciente.nome_mae} onChange={handlePacienteChange} />
+                    <Input title="Apelido da Mulher" name="apelido" value={paciente.apelido} onChange={handlePacienteChange} className="w-1/2" />
                     <div className="flex gap-5">
-                        <Input title="Apelido da Mulher" name="apelido" value={paciente.apelido} onChange={handlePacienteChange} className="w-1/2" />
                         <Input title="CPF" name="cpf" value={paciente.cpf} onChange={handlePacienteChange} className="w-1/2" />
+                        <Input title="Senha" name="senha" value={paciente.senha} onChange={handlePacienteChange} className="w-1/2" />
                     </div>
                     <div className="flex gap-5">
                         <Input title="Nacionalidade" name="nacionalidade" value={paciente.nacionalidade} onChange={handlePacienteChange} className="w-1/3" />
@@ -728,6 +733,27 @@ export default function Form() {
                             onChange={handleResultadoChange}
                             className="w-full border-b border-black"
                         />
+                    </div>
+
+                    <div>
+                        <p>RISCO DA PACIENTE:</p>
+                        <div className="flex flex-col gap-2">
+                            {[
+                                {risco: "Baixo", color: "#4CAF50"},
+                                {risco: "Médio", color: "#FFC107"},
+                                {risco: "Alto", color: "#F44236"}
+                            ].map((item, index) => (
+                                <div className="flex gap-2" key={index}>
+                                    <input 
+                                        type="radio" 
+                                        name="risco"
+                                        value={item.risco}
+                                        onChange={handleFichaChange}
+                                    />
+                                    <div>{item.risco}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="flex gap-5 mt-4">
