@@ -15,9 +15,9 @@ export default function FullCalendar({ onDateSelect, setMessage}) {
       initialView: "dayGridMonth",
       selectable: true,
       headerToolbar: {
-      left: 'prev,next',
-      center: 'title',
-      right: ''
+        left: 'title',
+        center: '',
+        right: 'prev,next'
   },
       businessHours: {
         daysOfWeek: [1, 2, 3, 4, 5], 
@@ -54,5 +54,5 @@ export default function FullCalendar({ onDateSelect, setMessage}) {
 
     return () => calendar.destroy();
   }, [onDateSelect]);
-  return <div ref={calendarRef} className="w-[90%] text-center font-semibold text-xs" />;
+  return <div ref={calendarRef} className="w-[90%] text-center font-semibold text-xs"/>;
 }
