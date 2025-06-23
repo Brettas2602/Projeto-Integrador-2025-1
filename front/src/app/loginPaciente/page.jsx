@@ -1,33 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/userContext";
 
 export default function LoginPaciente() {
-    const [cpf, setCpf] = useState('')
-    const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
+  const [cpf, setCpf] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-    const router = useRouter()
+  const { paciente, setPaciente } = useUser();
+  const router = useRouter();
 
-    async function checkUserData() {
-        try {
-            const { data } = await axios.get(`http://localhost:8000/paciente/${cpf}`)
-            const { senha: userPassword, cpf: userCPF } = data
+  useEffect(() => {
+    if (paciente) router.replace("dashboardPaciente");
+  }, [paciente]);
 
-            if (userPassword != password || userCPF != cpf) {
-                setMessage("Usuário ou senha incorretos")
-                return
-            }
-    
-            router.replace("/dashboardPaciente")
-        } catch {
-            setMessage("Usuário ou senha incorretos")
-            return
-        }
+  async function checkUserData() {
+    try {
+      const { data } = await axios.get(`http://localhost:8000/paciente/${cpf}`);
+      const { senha: userPassword, cpf: userCPF } = data;
+
+      if (userPassword !== password || userCPF !== cpf) {
+        setMessage("Usuário ou senha incorretos");
+        return;
+      }
+
+      setPaciente(data);
+
+      router.replace("dashboardPaciente");
+    } catch {
+      setMessage("Usuário ou senha incorretos");
+      return;
     }
+  }
 
   return (
     <div className="max-w-screen-md mx-auto w-full h-screen flex justify-center items-center px-2">
@@ -38,12 +46,11 @@ export default function LoginPaciente() {
           Paciente, faça o login!
         </p>
 
-        <input type="number" placeholder="CPF" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setCpf(e.target.value)}/>
+        <input type="text" inputMode="numeric" pattern="\d*" placeholder="CPF" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setCpf(e.target.value)}/>
 
-        <input type="password" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setPassword(e.target.value)} />
+        <input type="password" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setPassword(e.target.value)}/>
 
-        <button className="text-center border-2 border-[#FFB8B8] px-4 py-2 rounded-2xl hover:bg-[#FFB8B8] transition-colors" onClick={checkUserData}
-        >
+        <button className="text-center border-2 border-[#FFB8B8] px-4 py-2 rounded-2xl hover:bg-[#FFB8B8] transition-colors" onClick={checkUserData}>
           Entrar
         </button>
 
