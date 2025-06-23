@@ -357,3 +357,12 @@ func (pu *PacienteUseCase) GetLastConsultationByIdPaciente(id int) (*model.Consu
 
     return consulta, nil
 }
+
+func (pu *PacienteUseCase) GetLastFichaWithRiskByIdPaciente(id int) (*model.FichaCitopatologica, error){
+	ficha, err := pu.fichaRepository.GetLastFichaWithRiskByIdPaciente(id)
+	if err != nil{
+		return nil, err
+	}
+
+	return ficha, nil
+}

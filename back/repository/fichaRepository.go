@@ -96,3 +96,34 @@ func (fr *FichaRepository) DeleteFichaByID(id *int) error {
 
 	return nil
 }
+
+func (fr *FichaRepository) GetLastFichaWithRiskByIdPaciente(idPaciente int) (*model.FichaCitopatologica, error){
+	query, err := fr.connection.Prepare("SELECT * FROM ficha_citopatologica WHERE paciente_id = $1 AND risco IS NOT NULL ORDER BY id DESC LIMIT 1")
+	if err != nil{
+		return nil, err
+	}
+
+	
+	defer query.Close()
+	
+	var fichaObj model.FichaCitopatologica
+
+	err = query.QueryRow(idPaciente).Scan(
+		&fichaObj.ID,
+		&fichaObj.PacienteID,
+		&fichaObj.DataCriacao,
+		&fichaObj.NumeroProtocolo,
+		&fichaObj.Risco,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &fichaObj, nil
+
+}
