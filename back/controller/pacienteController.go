@@ -40,7 +40,35 @@ func (pc *PacienteController) CreatePaciente(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, createdPaciente)
 }
+func (pc *PacienteController) GetPacienteById(ctx *gin.Context) {
+	pacienteIdStr := ctx.Param("pacienteId")
+	pacienteId, err := strconv.Atoi(pacienteIdStr)
 
+
+	if pacienteId <= 0 || err != nil{
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id inválido",
+		})
+		return
+	}
+
+	paciente, err := pc.useCase.GetPacienteById(pacienteId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if paciente == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, paciente)
+}
 func (pc *PacienteController) GetPacienteByCpf(ctx *gin.Context) {
 	pacienteCpf := ctx.Param("pacienteCpf")
 	if strings.TrimSpace(pacienteCpf) == "" {
