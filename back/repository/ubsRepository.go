@@ -69,3 +69,39 @@ func (ur *UbsRepository) DeleteUbsByID (id int) error {
 
 	return nil
 }
+
+func (ur *UbsRepository) GetAllUbs()([]model.Ubs, error){
+	rows, err := ur.connection.Query("SELECT * FROM ubs")
+	if err != nil{
+		return nil	, err
+	}
+
+	var ubsList[]model.Ubs
+
+	for rows.Next(){
+		var ubs model.Ubs
+		err := rows.Scan(
+			&ubs.ID,
+			&ubs.EnderecoID,
+			&ubs.Nome,
+			&ubs.CNES,
+			&ubs.Prontuario,
+		)
+
+		if err != nil{
+			if err == sql.ErrNoRows{
+				return nil,nil
+			}
+
+			return nil, err	
+		}
+
+		ubsList = append(ubsList, ubs)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ubsList, nil
+}

@@ -53,3 +53,22 @@ func (uc *UbsController) GetUbsByID(ctx *gin.Context)  {
 
 	ctx.JSON(http.StatusOK, ubs)
 }
+
+func (uc *UbsController) GetAllUbs(ctx *gin.Context){
+	ubs, err := uc.useCase.GetAllUbs()
+	if err != nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+				"message":err.Error(),
+			})
+			return
+	}
+
+	if ubs == nil{
+		ctx.JSON(http.StatusNotFound, gin.H{
+				"message": "Item não encontrado na base de dados",
+			})
+			return
+	}
+
+	ctx.JSON(http.StatusOK, ubs)
+}

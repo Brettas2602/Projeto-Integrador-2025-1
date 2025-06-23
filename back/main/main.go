@@ -34,6 +34,7 @@ func main() {
 	UbsController := controller.NewUbsController(UbsUseCase)
 
 	server.GET("/ubs/:ubsId", UbsController.GetUbsByID)
+	server.GET("/ubs/getallubs", UbsController.GetAllUbs)
 
 	ConsultaRepository := repository.NewConsultasRepository(dbConnection)
 	ConsultaUseCase := useCase.NewConsultaUseCase(ConsultaRepository)
