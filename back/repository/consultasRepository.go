@@ -107,3 +107,26 @@ func (cr *ConsultasRepository) GetAllConsultas() ([]model.Consultas, error){
 
 	return consultasList, nil
 }
+
+func (cr *ConsultasRepository) GetLastConsultationByIdPaciente(id int) (*model.Consultas, error){
+	query, err:= cr.connection.Prepare("SELECT * FROM consultas WHERE paciente_id = $1 ORDER BY id DESC LIMIT 1")
+	if err != nil {
+		return nil, err
+	}
+	defer query.Close()
+	var consulta model.Consultas
+
+	err = query.QueryRow(id).Scan(
+		&consulta.ID,
+		&consulta.PacienteID,
+		&consulta.Data,
+		&consulta.UbsID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &consulta, nil
+}
