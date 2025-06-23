@@ -83,15 +83,19 @@ func main() {
 		ExameClinicoRepository, 
 		IdentificacaoLabRepository, 
 		ResultadoRepository,
+		ConsultaRepository,
 	)
 	PacienteController := controller.NewPacienteController(PacienteUseCase)
 
 	server.GET("/paciente/:pacienteCpf", PacienteController.GetPacienteByCpf)
+	server.GET("/paciente/getbyid/:pacienteId", PacienteController.GetPacienteById)
+	server.GET("/paciente/getlastfour", PacienteController.GetLastFourPacientes)
 	server.GET("/paciente/getbyname/:pacienteNome", PacienteController.GetAllPacienteByName)
 	server.GET("/paciente/getbyage/:idadeMin/:idadeMax", PacienteController.GetAllPacienteByAge)
 	server.GET("/paciente/getbyrisk/:risco", PacienteController.GetAllPacienteByRisk)
 	server.GET("/paciente/getcountbyrisk", PacienteController.GetCountPacienteByRisk)
 	server.GET("/paciente/resultadosbyid/:pacienteId", PacienteController.GetResultadosByPacienteId)
+	server.GET("/paciente/getlastconsultationbyid/:pacienteId", PacienteController.GetLastConsultationByIdPaciente)
 	server.POST("/paciente", PacienteController.CreatePaciente)
 
 	server.Run(":8000")
