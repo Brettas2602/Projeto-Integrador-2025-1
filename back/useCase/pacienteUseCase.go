@@ -14,6 +14,7 @@ type PacienteUseCase struct {
 	exameClinicoRepository repository.ExameClinicoRepository
 	identificacaoLabRepository repository.IdentificacaoLabRepository
 	resultadoRepository repository.ResultadoRepository
+	consultasRepository repository.ConsultasRepository
 }
 
 func NewPacienteUseCase(
@@ -24,6 +25,7 @@ func NewPacienteUseCase(
 	exameClinicoRepo repository.ExameClinicoRepository,
 	identificacaoRepo repository.IdentificacaoLabRepository,
 	resultadoRepo repository.ResultadoRepository,
+	consultasRepo repository.ConsultasRepository,
 ) PacienteUseCase {
 	return PacienteUseCase{
 		repository: repo,
@@ -33,6 +35,7 @@ func NewPacienteUseCase(
 		exameClinicoRepository: exameClinicoRepo,
 		identificacaoLabRepository: identificacaoRepo,
 		resultadoRepository: resultadoRepo,
+		consultasRepository: consultasRepo,
 	}
 }
 
@@ -136,6 +139,52 @@ func (pu *PacienteUseCase) GetPacienteByCpf(cpf string) (*model.Paciente, error)
 
 	paciente.Fichas = &fichas
 	return paciente, nil
+}
+
+func (pu *PacienteUseCase) GetLastFourPacientes() ([]model.Paciente, error){
+    pacientes, err := pu.repository.GetLastFourPacientes()
+    if err != nil{
+        return nil, err
+    }
+
+
+    for i, paciente := range pacientes{
+        fichas, err := pu.fichaRepository.GetFichasByPaciente(*paciente.ID)
+        if err != nil {
+            return nil, err
+    }
+
+
+    if fichas != nil {
+        for i := range fichas {
+            fichas[i].DadosAnamnese, err = pu.anamneseRepository.GetDadosAnamneseByFichaID(*fichas[i].ID)
+            if err != nil && err != sql.ErrNoRows {
+                return nil, err
+            }
+
+            fichas[i].ExameClinico, err = pu.exameClinicoRepository.GetExameClinicoByFichaID(*fichas[i].ID)
+            if err != nil && err != sql.ErrNoRows {
+                return nil, err
+            }
+
+            fichas[i].IdentificacaoLaboratorio, err = pu.identificacaoLabRepository.GetIdentificacaoLabByFichaID(*fichas[i].ID)
+            if err != nil && err != sql.ErrNoRows {
+                return nil, err
+            }
+
+            fichas[i].Resultado, err = pu.resultadoRepository.GetResultadoByFichaID(*fichas[i].ID)
+            if err != nil && err != sql.ErrNoRows {
+                return nil, err
+            }
+        }
+    }
+
+
+        pacientes[i].Fichas = &fichas
+    }
+
+
+    return pacientes, nil
 }
 
 func (pu *PacienteUseCase) GetAllPacienteByName(nome string) ([]model.Paciente, error){
@@ -297,4 +346,14 @@ func (pu *PacienteUseCase) GetResultadosByPacienteId(id int) ([]model.ResultadoE
 	}
 
 	return resultadosFichas, nil
+}
+
+func (pu *PacienteUseCase) GetLastConsultationByIdPaciente(id int) (*model.Consultas, error){
+    consulta, err := pu.consultasRepository.GetLastConsultationByIdPaciente(id)
+    if err != nil{
+        return nil, err
+    }
+
+
+    return consulta, nil
 }

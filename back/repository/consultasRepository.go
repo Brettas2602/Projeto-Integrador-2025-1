@@ -73,7 +73,7 @@ func (cr *ConsultasRepository) DeleteConsultaByID (id int) error {
 }
 
 func (cr *ConsultasRepository) GetAllConsultas() ([]model.Consultas, error){
-	rows, err := cr.connection.Query("SELECT * FROM consultas")
+	rows, err := cr.connection.Query("SELECT * FROM consultas ORDER BY data ASC")
 	if err != nil{
 		return nil, err
 	}
@@ -128,5 +128,6 @@ func (cr *ConsultasRepository) GetLastConsultationByIdPaciente(id int) (*model.C
 		}
 		return nil, err
 	}
+	
 	return &consulta, nil
 }
