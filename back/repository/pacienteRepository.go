@@ -34,8 +34,45 @@ func (pr *PacienteRepository) CreatePaciente(paciente *model.Paciente) (*model.P
 	return paciente, nil
 }
 
+func (pr *PacienteRepository) GetPacienteById(id int) (*model.Paciente, error){
+	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE id= $1`)
+	if err != nil {
+		return nil, err
+	}
+
+	defer query.Close()
+
+	var paciente model.Paciente
+
+	err = query.QueryRow(id).Scan(
+		&paciente.ID,
+		&paciente.EnderecoID,
+		&paciente.IdUbs,
+		&paciente.CartaoSUS,
+		&paciente.Nome,
+		&paciente.NomeMae,
+		&paciente.Apelido,
+		&paciente.CPF,
+		&paciente.Nacionalidade,
+		&paciente.DataNascimento,
+		&paciente.Cor,
+		&paciente.Telefone,
+		&paciente.Escolaridade,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &paciente, nil
+}
+
 func (pr *PacienteRepository) GetPacienteByCpf(cpf string) (*model.Paciente, error) {
-	query, err := pr.connection.Prepare(`SELECT * FROM paciente WHERE cpf = $1`)
+	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE cpf = $1`)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +95,6 @@ func (pr *PacienteRepository) GetPacienteByCpf(cpf string) (*model.Paciente, err
 		&paciente.Cor,
 		&paciente.Telefone,
 		&paciente.Escolaridade,
-        &paciente.Senha,
 	)
 
 	if err != nil {
@@ -70,6 +106,51 @@ func (pr *PacienteRepository) GetPacienteByCpf(cpf string) (*model.Paciente, err
 	}
 
 	return &paciente, nil
+}
+
+func (pr *PacienteRepository) GetLastFourPacientes() ([]model.Paciente, error) {
+	rows, err := pr.connection.Query("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente ORDER BY id DESC LIMIT 4")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var pacientes []model.Paciente
+
+	for rows.Next() {
+		var paciente model.Paciente
+
+		err := rows.Scan(
+			&paciente.ID,
+			&paciente.EnderecoID,
+			&paciente.IdUbs,
+			&paciente.CartaoSUS,
+			&paciente.Nome,
+			&paciente.NomeMae,
+			&paciente.Apelido,
+			&paciente.CPF,
+			&paciente.Nacionalidade,
+			&paciente.DataNascimento,
+			&paciente.Cor,
+			&paciente.Telefone,
+			&paciente.Escolaridade,
+		)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil, nil
+			}
+			return nil, err
+		}
+
+		pacientes = append(pacientes, paciente)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return pacientes, nil
 }
 
 func (pc *PacienteRepository) DeletePacienteByID(id int) error {
