@@ -366,3 +366,13 @@ func (pu *PacienteUseCase) GetLastFichaWithRiskByIdPaciente(id int) (*model.Fich
 
 	return ficha, nil
 }
+
+func (pu *PacienteUseCase) GetAllConsultasByIdPaciente(id int) ([]model.Consultas, error){
+	consultas, err:= pu.consultasRepository.GetAllConsultasByIdPaciente(id)
+	if err != nil{
+		return nil, err
+	}
+
+	return consultas, nil 
+
+}

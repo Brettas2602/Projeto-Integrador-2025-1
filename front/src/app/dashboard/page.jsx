@@ -7,24 +7,27 @@ import { MdScreenSearchDesktop } from "react-icons/md";
 import { ImStatsDots } from "react-icons/im";
 import Chart from "react-google-charts";
 import RecentPacient from "@/components/RecentPacient";
-import { pacients } from "@/dados ficticios/dadosFicticios";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
 
+    const [pacientes, setPacientes] = useState([])
     const [chartData, setChartData] = useState([
     ["Nível de risco", "Número de pacientes"],
     ["Alto", 0],
     ["Médio", 0],
     ["Baixo", 0]
-  ]);
+    ]);
 
-  useEffect(() => {
-        const fetchData = async () => {
+useEffect(() => {
+    const fetchData =
+        async () => {
         try {
             const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
+            const {data: resPaciente} = await axios.get("http://localhost:8000/paciente/getlastfour");
+            setPacientes(resPaciente)
 
             const riscos = {
             "Alto": 0,
@@ -95,21 +98,19 @@ export default function Dashboard() {
                             Consultar pacientes cadastrados
                         </button>
 
-                        <button 
-                            className="hover:scale-[1.06] transition w-full flex items-center px-5 py-3 gap-3 text-xl bg-white shadow-md shadow-gray-400 rounded-lg"
-                        >
+                        <Link href={"/consultasAgendadas"} className="hover:scale-[1.06] transition w-full flex items-center px-5 py-3 gap-3 text-xl bg-white shadow-md shadow-gray-400 rounded-lg">
                             <ImStatsDots className="w-12 h-fit" />
-                            Estatística
-                        </button>
+                            Consultas Agendadas
+                        </Link>
                     </div>
 
                     <div className="w-full xml:w-[64%] md:w-[67%] ldx:w-[35%] flex flex-col justify-between px-5 py-3 text-xl bg-white shadow-md shadow-gray-400 rounded-lg">
                         <p>Pacientes recentes</p>
 
                         {
-                            pacients.map((pacient, index) => (
-                                <RecentPacient pacientData={pacient} key={index} />
-                            ))
+                            (pacientes.map((p, i) => (
+                                <RecentPacient pacientData={p} key={i} />
+                            )))
                         }
                     </div>
 

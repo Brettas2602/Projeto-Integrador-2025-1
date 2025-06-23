@@ -309,3 +309,5 @@ func (pu *PacienteController) GetLastFichaWithRiskByIdPaciente(ctx *gin.Context)
 
 	ctx.JSON(http.StatusOK, paciente)
 }
+
+// func (pu *PacienteController)
