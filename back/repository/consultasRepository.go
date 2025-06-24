@@ -132,7 +132,7 @@ func (cr *ConsultasRepository) GetLastConsultationByIdPaciente(id int) (*model.C
 	return &consulta, nil
 }
 func (cr *ConsultasRepository) GetAllConsultasByIdPaciente(paciente_id int) ([]model.Consultas, error){
-	query, err := cr.connection.Prepare("SELECT * FROM consultas WHERE paciente_id = $1 ORDER BY data ASC")
+	query, err := cr.connection.Prepare("SELECT * FROM consultas WHERE paciente_id = $1  AND data::date >= CURRENT_DATE ORDER BY data ASC")
 	if err != nil{
 		return nil, err
 	}
