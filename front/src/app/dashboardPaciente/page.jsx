@@ -8,6 +8,7 @@ import { BsCardChecklist } from "react-icons/bs";
 import { SlUserFemale } from "react-icons/sl";
 import { CgFileDocument } from "react-icons/cg";
 import { MdAddLocation } from "react-icons/md";
+import { MdEventAvailable } from "react-icons/md";
 import { useUser } from "@/context/userContext";
 import { useState, useEffect } from "react";
 
@@ -111,10 +112,10 @@ export default function DashboardPaciente() {
                     
                     <div className="w-1/2 flex justify-end items-center">
                     
-                    <button className="bg-[#FFF1F1] w-[90%] h-[140px] xs:h-[160px] rounded-xl text-2xl flex flex-col items-start justify-start px-4 py-3 shadow-md shadow-blue-500">
-                    <MdAddLocation className="w-16 h-fit mb-2" />
-                    <p className="w-fit whitespace-normal">Localizar UBS</p>
-                    </button>
+                    <Link href={"/consultasAgendadasPaciente"} className="bg-[#FFF1F1] w-[90%] h-[140px] xs:h-[160px] rounded-xl text-2xl flex flex-col items-start justify-start px-4 py-3 shadow-md shadow-blue-500">
+                    <MdEventAvailable className="w-16 h-fit mb-2"/>
+                    <p className="w-fit whitespace-normal">Consultas Agendadas</p>
+                    </Link>
                     
                     </div>
                     </div>
