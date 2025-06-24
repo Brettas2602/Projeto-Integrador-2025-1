@@ -52,6 +52,30 @@ func (ir *IdentificacaoLabRepository) CreateIdentificacaoLab(ident *model.Identi
 	return ident, nil
 }
 
+func (ir *IdentificacaoLabRepository) UpdateIdentificacaoLab(ident *model.IdentificacaoLaboratorio) error {
+	query := `
+		UPDATE identificacao_laboratorio SET
+			ficha_id = $1,
+			cnes_laboratorio = $2,
+			nome = $3,
+			numero_exame = $4,
+			recebido_em = $5
+		WHERE id = $6
+	`
+
+	_, err := ir.connection.Exec(
+		query,
+		ident.FichaID,
+		ident.CnesLaboratorio,
+		ident.Nome,
+		ident.NumeroExame,
+		ident.RecebidoEm,
+		ident.ID,
+	)
+
+	return err
+}
+
 func (ur *IdentificacaoLabRepository) DeleteIdentificaçãoLabByCpf(id int) error {
 	query, err := ur.connection.Prepare("DELETE FROM identificacao_laboratorio WHERE id = $1")
 	if err != nil {

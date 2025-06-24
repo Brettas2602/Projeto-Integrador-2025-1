@@ -72,6 +72,42 @@ func (dr *DadosAnamneseRepository) CreateDadosAnamnese(dados *model.DadosAnamnes
 	return dados, nil
 }
 
+func (dr *DadosAnamneseRepository) UpdateDadosAnamnese(dados *model.DadosAnamnese) error {
+	query := `
+		UPDATE dados_anamnese SET
+			ficha_id = $1,
+			motivo_exame = $2,
+			data_exame_preventivo = $3,
+			diu = $4,
+			gravida = $5,
+			usa_anticoncepcional = $6,
+			hormonio_menopausa = $7,
+			fez_radioterapia = $8,
+			ultima_menstruacao = $9,
+			sangramento_relacoes = $10,
+			sangramento_menopausa = $11
+		WHERE id = $12
+	`
+
+	_, err := dr.connection.Exec(
+		query,
+		dados.FichaID,
+		dados.MotivoExame,
+		dados.DataExamePreventivo,
+		dados.Diu,
+		dados.Gravida,
+		dados.Anticoncepcional,
+		dados.HormonioMenopausa,
+		dados.FezRadioterapia,
+		dados.UltimaMenstruacao,
+		dados.SangramentoRelacoes,
+		dados.SangramentoMenopausa,
+		dados.ID,
+	)
+
+	return err
+}
+
 func (dr *DadosAnamneseRepository) DeleteDadosAnamneseByID(id *int) error {
 	query, err := dr.connection.Prepare("DELETE FROM dados_anamnese WHERE id = $1")
 	if err != nil {

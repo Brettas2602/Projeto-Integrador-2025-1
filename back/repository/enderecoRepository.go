@@ -44,6 +44,40 @@ func (er *EnderecoRepository) CreateEndereco(endereco *model.Endereco) (*model.E
 	return endereco, nil
 }
 
+func (er *EnderecoRepository) UpdateEndereco(endereco *model.Endereco) error {
+	query, err := er.connection.Prepare(`
+		UPDATE endereco 
+		SET 
+			logradouro = $1,
+			numero = $2,
+			complemento = $3,
+			bairro = $4,
+			cidade = $5,
+			uf = $6,
+			cep = $7,
+			referencia = $8
+		WHERE id = $9
+	`)
+	if err != nil {
+		return err
+	}
+	defer query.Close()
+
+	_, err = query.Exec(
+		endereco.Logradouro,
+		endereco.Numero,
+		endereco.Complemento,
+		endereco.Bairro,
+		endereco.Cidade,
+		endereco.Uf,
+		endereco.CEP,
+		endereco.Referencia,
+		endereco.ID,
+	)
+
+	return err
+}
+
 func (er *EnderecoRepository) GetEnderecoByID(id int) (*model.Endereco, error) {
 	query, err := er.connection.Prepare("SELECT id, logradouro, numero, complemento, bairro, cidade, uf, cep, referencia FROM endereco WHERE id = $1")
 	if err != nil {
