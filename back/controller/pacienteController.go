@@ -310,4 +310,24 @@ func (pu *PacienteController) GetLastFichaWithRiskByIdPaciente(ctx *gin.Context)
 	ctx.JSON(http.StatusOK, paciente)
 }
 
-// func (pu *PacienteController)
+func (pu *PacienteController) GetAllConsultasByIdPaciente(ctx *gin.Context){
+	pacienteIdStr := ctx.Param("pacienteId")
+	pacienteId, err := strconv.Atoi(pacienteIdStr)
+
+	if pacienteId <= 0 || err != nil{
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id paciente inválido",
+		})
+		return
+	}
+
+	consultas, err := pu.useCase.GetAllConsultasByIdPaciente(pacienteId)
+	if err != nil{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, consultas)
+}
