@@ -17,7 +17,7 @@ func NewFichaRepository(conn *sql.DB) FichaRepository {
 }
 
 func (fr *FichaRepository) CreateFicha(ficha *model.FichaCitopatologica) (*model.FichaCitopatologica, error) {
-	query, err := fr.connection.Prepare("INSERT INTO ficha_citopatologica (paciente_id, numero_protocolo, risco) VALUES ($1, $2, $3) RETURNING id, data_criacao")
+	query, err := fr.connection.Prepare("INSERT INTO ficha_citopatologica (paciente_id, numero_protocolo, risco) VALUES ($1, $2, $3) RETURNING id, data_criacao, risco")
 	if err != nil {
 		return nil, err
 	}

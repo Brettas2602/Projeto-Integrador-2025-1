@@ -53,6 +53,7 @@ CREATE TABLE paciente (
     nome_mae VARCHAR(250),
     apelido VARCHAR(250),
     cpf CHAR(11) UNIQUE,
+    senha VARCHAR(80),
     nacionalidade VARCHAR(50),
     data_nascimento DATE,
     cor VARCHAR(30),

@@ -100,7 +100,10 @@ export default function Form() {
     };
 
     const handleAnamneseChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (value == "true" || value == "false") {
+            value == "true" ? value = true : value = false
+        }
         setFicha(prev => ({
             ...prev,
             dados_anamnese: { ...prev.dados_anamnese, [name]: value }
@@ -109,7 +112,10 @@ export default function Form() {
     };
 
     const handleExameClinicoChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (value == "true" || value == "false") {
+            value == "true" ? value = true : value = false
+        }
         setFicha(prev => ({
             ...prev,
             exame_clinico: { ...prev.exame_clinico, [name]: value }
@@ -118,7 +124,10 @@ export default function Form() {
     };
 
     const handleIdentificacaoLabChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (value == "true" || value == "false") {
+            value == "true" ? value = true : value = false
+        }
         setFicha(prev => ({
             ...prev,
             identificacao_laboratorio: { ...prev.identificacao_laboratorio, [name]: value }
@@ -127,7 +136,10 @@ export default function Form() {
     };
 
     const handleResultadoChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (value == "true" || value == "false") {
+            value == "true" ? value = true : value = false
+        }
         setFicha(prev => ({
             ...prev,
             resultado: { ...prev.resultado, [name]: value }
@@ -301,7 +313,7 @@ export default function Form() {
                                     type="radio"
                                     name="data_exame_preventivo"
                                     value="sim"
-                                    checked={ficha.dados_anamnese.data_exame_preventivo !== ""}
+                                    checked={ficha.dados_anamnese.data_exame_preventivo !== null && ficha.dados_anamnese.data_exame_preventivo != ""}
                                     onChange={handleAnamneseChange}
                                 />
                                 Sim. Quando fez o último exame?
@@ -355,7 +367,7 @@ export default function Form() {
                                     type="radio"
                                     name="ultima_menstruacao"
                                     value="sim"
-                                    checked={ficha.dados_anamnese.ultima_menstruacao !== ""}
+                                    checked={ficha.dados_anamnese.ultima_menstruacao !== "" && ficha.dados_anamnese.ultima_menstruacao !== null}
                                     onChange={handleAnamneseChange}
                                 />
                                 Sei

@@ -17,7 +17,7 @@ func NewPacienteRepository(conn *sql.DB) PacienteRepository {
 }
 
 func (pr *PacienteRepository) CreatePaciente(paciente *model.Paciente) (*model.Paciente, error) {
-	query, err := pr.connection.Prepare("INSERT INTO paciente (endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id")
+	query, err := pr.connection.Prepare("INSERT INTO paciente (endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade, senha) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id")	
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (pr *PacienteRepository) GetPacienteById(id int) (*model.Paciente, error){
 }
 
 func (pr *PacienteRepository) GetPacienteByCpf(cpf string) (*model.Paciente, error) {
-	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE cpf = $1`)
+	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, senha, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE cpf = $1`)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +90,7 @@ func (pr *PacienteRepository) GetPacienteByCpf(cpf string) (*model.Paciente, err
 		&paciente.NomeMae,
 		&paciente.Apelido,
 		&paciente.CPF,
+		&paciente.Senha,
 		&paciente.Nacionalidade,
 		&paciente.DataNascimento,
 		&paciente.Cor,
