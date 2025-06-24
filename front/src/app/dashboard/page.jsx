@@ -78,7 +78,6 @@ export default function Dashboard() {
             const timer = setTimeout(() => {
                 setMessage(null);
             }, 4000);
-        }
 
         fetchData();
     }, []);

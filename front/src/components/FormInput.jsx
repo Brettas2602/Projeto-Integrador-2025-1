@@ -1,4 +1,4 @@
-export default function Input({ type = "text", title = "", name = "", id = "", value = "", onChange, className = "", placeholder = "" }) {
+export default function Input({ type = "text", title = "", name = "", id, value = "", onChange, className = "", placeholder = "" }) {
   const inputId = id || name;
   return (
     <div className={`${className} w-full flex flex-col`}>
