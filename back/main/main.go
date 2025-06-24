@@ -41,6 +41,7 @@ func main() {
 	ConsultaController := controller.NewConsultaController(ConsultaUseCase)
 
 	server.GET("/consulta/getallconsultas", ConsultaController.GetAllConsultas)
+	server.GET("/consulta/getcountconsultasbyallmonths", ConsultaController.GetCountConsultasByAllMonths)
 	server.POST("/consulta/createconsulta", ConsultaController.CreateConsulta)
 
 	MedicoRepository := repository.NewMedicoRepository(dbConnection)

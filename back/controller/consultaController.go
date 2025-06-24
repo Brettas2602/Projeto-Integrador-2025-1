@@ -58,3 +58,22 @@ func (cc *ConsultaController) GetAllConsultas(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, consultas)
 }
+
+func (cc *ConsultaController) GetCountConsultasByAllMonths(ctx *gin.Context) {
+	consultas, err := cc.useCase.GetCountConsultasByAllMonths()
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if consultas == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, consultas)
+}

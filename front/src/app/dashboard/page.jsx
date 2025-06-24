@@ -14,12 +14,15 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
 
     const [pacientes, setPacientes] = useState([])
-    const [chartData, setChartData] = useState([
+    const [donutChartData, setDonutChartData] = useState([
     ["Nível de risco", "Número de pacientes"],
     ["Alto", 0],
     ["Médio", 0],
     ["Baixo", 0]
     ]);
+    const [barChartData, setBarChartData] = useState([
+        ["Mês", "Número de consultas"]
+    ])
 
 useEffect(() => {
     const fetchData =
@@ -27,6 +30,7 @@ useEffect(() => {
         try {
             const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
             const {data: resPaciente} = await axios.get("http://localhost:8000/paciente/getlastfour");
+            const {data: consultasPorMes} = await axios.get("http://localhost:8000/consulta/getcountconsultasbyallmonths")
             setPacientes(resPaciente)
 
             const riscos = {
@@ -34,19 +38,29 @@ useEffect(() => {
             "Médio": 0,
             "Baixo": 0
             };
-
+            
             res.data.forEach(item => {
-            if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
-            if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
-            if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
+                if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
+                if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
+                if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
             });
-
-            setChartData([
-            ["Nível de risco", "Número de pacientes"],
-            ["Alto", riscos["Alto"]],
-            ["Médio", riscos["Médio"]],
-            ["Baixo", riscos["Baixo"]]
+            
+            setDonutChartData([
+                ["Nível de risco", "Número de pacientes"],
+                ["Alto", riscos["Alto"]],
+                ["Médio", riscos["Médio"]],
+                ["Baixo", riscos["Baixo"]]
             ]);
+
+            const consultas = [
+                ["Mês", "Número de consultas"]
+            ] 
+
+            consultasPorMes.forEach((item) => {
+                consultas.push([item.mes, item.total_consultas])
+            })
+
+            setBarChartData(consultas)
         } catch (error) {
             console.error("Erro ao buscar dados:", error);
         }
@@ -145,7 +159,7 @@ useEffect(() => {
                         <Chart
                             className="mt-3"
                             chartType="PieChart"
-                            data={chartData}
+                            data={donutChartData}
                             options={{
                                 pieHole: 0.6,
                                 pieSliceText: "none",
@@ -164,21 +178,7 @@ useEffect(() => {
                         <p>Número de consultas por mês</p>
                         <Chart
                             chartType="ColumnChart"
-                            data={[
-                                ["Mês", "Número de consultas"],
-                                ["Jan", 19],
-                                ["Fev", 20],
-                                ["Mar", 23],
-                                ["Abr", 33],
-                                ["Mai", 27],
-                                ["Jun", 36],
-                                ["Jul", 30],
-                                ["Ago", 39],
-                                ["Set", 26],
-                                ["Out", 40],
-                                ["Nov", 21],
-                                ["Dez", 29]
-                            ]}
+                            data={barChartData}
                             options={{
                                 legend: "none",
                                 
