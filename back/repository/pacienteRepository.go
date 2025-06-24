@@ -24,7 +24,7 @@ func (pr *PacienteRepository) CreatePaciente(paciente *model.Paciente) (*model.P
 
 	defer query.Close()
 
-	err = query.QueryRow(paciente.EnderecoID, paciente.IdUbs, paciente.CartaoSUS, paciente.Nome, paciente.NomeMae, paciente.Apelido, paciente.CPF, paciente.Nacionalidade, paciente.DataNascimento, paciente.Cor, paciente.Telefone, paciente.Nacionalidade, paciente.Senha).Scan(
+	err = query.QueryRow(paciente.EnderecoID, paciente.IdUbs, paciente.CartaoSUS, paciente.Nome, paciente.NomeMae, paciente.Apelido, paciente.CPF, paciente.Nacionalidade, paciente.DataNascimento, paciente.Cor, paciente.Telefone, paciente.Escolaridade, paciente.Senha).Scan(
 		&paciente.ID,
 	)
 	if err != nil {
