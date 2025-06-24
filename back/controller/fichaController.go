@@ -38,3 +38,24 @@ func (fc *FichaController) CreateFichaByPaciente(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, createdFicha)
 }
+
+func (fc *FichaController) UpdateFicha(ctx *gin.Context) {
+	var ficha model.FichaCitopatologica
+	err := ctx.BindJSON(&ficha)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Erro ao fazer bind do JSON: " + err.Error(),
+		})
+		return
+	}
+
+	err = fc.useCase.UpdateFicha(&ficha)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Erro ao atualizar paciente: " + err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, ficha)
+}

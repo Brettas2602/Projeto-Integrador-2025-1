@@ -1,83 +1,34 @@
 "use client"
 
 import Input from "@/components/FormInput";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 
-export default function Form() {
+export default function EditFichaPage() {
+    const router = useRouter();
+    const params = useParams();
+    const cpfPaciente = params.cpfPaciente;
 
-    const [paciente, setPaciente] = useState({
-        id_ubs: 1,
-        cartao_sus: "",
-        nome: "",
-        senha: "",
-        nome_mae: "",
-        apelido: "",
-        cpf: "",
-        nacionalidade: "",
-        data_nascimento: null,
-        cor: "",
-        telefone: "",
-        escolaridade: "",
-        endereco: {
-            logradouro: "",
-            numero: "",
-            complemento: "",
-            bairro: "",
-            cidade: "",
-            uf: "",
-            cep: "",
-            referencia: ""
-        }
-    });
+    const [paciente, setPaciente] = useState(null);
+    const [ficha, setFicha] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [ficha, setFicha] = useState({
-        numero_protocolo: Math.round(Math.random() * Math.pow(10, 9)).toString(),
-        risco: "",
-        dados_anamnese: {
-            motivo_exame: "",
-            data_exame_preventivo: null,
-            diu: null,
-            gravida: null,
-            anticoncepcional: null,
-            hormonio_menopausa: null,
-            fez_radioterapia: null,
-            ultima_menstruacao: null,
-            sangramento_relacoes: null,
-            sangramento_menopausa: null
-        },
-        exame_clinico: {
-            inspecao_colo: "",
-            sinais_dst: null,
-            data_coleta: null,
-            responsavel: ""
-        },
-        identificacao_laboratorio: {
-            cnes_laboratorio: "",
-            nome: "",
-            numero_exame: "",
-            recebido_em: null
-        },
-        resultado: {
-            amostra_rejeitada: "",
-            epitelios: "",
-            adequabilidade: "",
-            normalidade: null,
-            alteracoes_calulares: "",
-            microbiologia: "",
-            celulas_atipicas: "",
-            atipia_escamosa: "",
-            atipia_glandular: "",
-            neoplasias_malignas: "",
-            celulas_endometriais: null,
-            observacoes_gerais: "",
-            screening_citotecnico: "",
-            responsavel: "",
-            data_resultado: null
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const res = await axios.get(`http://localhost:8000/paciente/${cpfPaciente}`);
+                console.log(res.data)
+                setPaciente(res.data);
+                setFicha(res.data.fichas[0]);
+                setLoading(false);
+            } catch (err) {
+                console.error("Erro ao carregar dados:", err);
+            }
         }
-    })
+        fetchData();
+    }, [cpfPaciente]);
 
     const handlePacienteChange = (e) => {
         const { name, value } = e.target;
@@ -149,10 +100,10 @@ export default function Form() {
 
     async function saveInformations() {
         try {
-            const {data: createdpaciente} = await axios.post("http://localhost:8000/paciente", paciente)
+            const { data: createdpaciente } = await axios.put("http://localhost:8000/paciente", paciente)
             console.log(createdpaciente)
     
-            const {data: createdFicha} = await axios.post("http://localhost:8000/ficha", {
+            const { data: createdFicha } = await axios.put("http://localhost:8000/ficha", {
                 ...ficha,
                 paciente_id: createdpaciente.id
             })
@@ -163,9 +114,10 @@ export default function Form() {
         } catch (error) {
             console.log(error)
         }
+
     }
 
-    const router = useRouter()
+    if (loading || !paciente || !ficha) return <p>Carregando...</p>;
 
     return (
         <div className="w-full min-h-screen px-20 py-5 bg-[#F9F5F5] flex flex-col gap-10" >
@@ -175,7 +127,7 @@ export default function Form() {
                 </button>
 
                 <p className="text-center text-3xl font-bold">
-                    REQUISIÇÃO DE EXAME CITOPATOLÓGICO - COLO DE ÚTERO
+                    EDITAR FICHA CITOPATOLÓGICA
                 </p>
 
                 <div className="w-12" />
@@ -183,33 +135,19 @@ export default function Form() {
 
             <form className="flex flex-col gap-10 mb-12">
 
-                {/* Dados iniciais */}
-                <section className="flex flex-col gap-5">
-                    <div className="flex justify-between gap-5">
-                        <Input disabled title="UF" className="w-1/4" />
-                        <Input disabled title="CNES" type="number" className="w-1/4" />
-                        <Input disabled title="Nº Protocolo" name="numero_protocolo" value={ficha.numero_protocolo} onChange={handleFichaChange} type="number" className="w-1/4" />
-                    </div>
-                    <Input disabled title="Unidade de Saúde" />
-                    <div className="flex gap-5">
-                        <Input disabled title="Município" className="w-1/2" />
-                        <Input disabled title="Prontuário" className="w-1/2" />
-                    </div>
-                </section>
-
                 {/* Informações pessoais */}
                 <section className="flex flex-col gap-5">
                     <h2 className="text-xl font-bold text-center">INFORMAÇÕES PESSOAIS</h2>
-                    <Input title="Cartão Sus" name="cartao_sus" value={paciente.cartao_sus} onChange={handlePacienteChange} className="w-1/3" />
-                    <Input title="Nome Completo da Mulher" name="nome" value={paciente.nome} onChange={handlePacienteChange} />
-                    <Input title="Nome Completo da Mãe" name="nome_mae" value={paciente.nome_mae} onChange={handlePacienteChange} />
-                    <Input title="Apelido da Mulher" name="apelido" value={paciente.apelido} onChange={handlePacienteChange} className="w-1/2" />
+                    <Input title="Cartão Sus" name="cartao_sus" value={paciente.cartao_sus || ""} onChange={handlePacienteChange} className="w-1/3" />
+                    <Input title="Nome Completo da Mulher" name="nome" value={paciente.nome || ""} onChange={handlePacienteChange} />
+                    <Input title="Nome Completo da Mãe" name="nome_mae" value={paciente.nome_mae || ""} onChange={handlePacienteChange} />
+                    <Input title="Apelido da Mulher" name="apelido" value={paciente.apelido || ""} onChange={handlePacienteChange} className="w-1/2" />
                     <div className="flex gap-5">
-                        <Input title="CPF" name="cpf" value={paciente.cpf} onChange={handlePacienteChange} className="w-1/2" />
-                        <Input title="Senha" name="senha" value={paciente.senha} onChange={handlePacienteChange} className="w-1/2" />
+                        <Input title="CPF" name="cpf" value={paciente.cpf || ""} onChange={handlePacienteChange} className="w-1/2" />
+                        <Input title="Senha" name="senha" value={paciente.senha || ""} onChange={handlePacienteChange} className="w-1/2" />
                     </div>
                     <div className="flex gap-5">
-                        <Input title="Nacionalidade" name="nacionalidade" value={paciente.nacionalidade} onChange={handlePacienteChange} className="w-1/3" />
+                        <Input title="Nacionalidade" name="nacionalidade" value={paciente.nacionalidade || ""} onChange={handlePacienteChange} className="w-1/3" />
                         <Input title="Data de Nascimento" name="data_nascimento" type="date" value={paciente.data_nascimento || ""} onChange={handlePacienteChange} className="w-1/3" />
                     </div>
                 </section>
@@ -234,34 +172,33 @@ export default function Form() {
                         <input
                             type="text"
                             name="cor"
-                            value={paciente.cor}
+                            value={paciente.cor || ""}
                             onChange={handlePacienteChange}
                             className="border-b border-black focus:outline-none"
                         />
                     </div>
                 </section>
 
-
                 {/* Dados residenciais */}
                 <section className="flex flex-col gap-5">
                     <h2 className="text-xl font-bold text-center">DADOS RESIDENCIAIS</h2>
                     <div className="flex gap-5">
-                        <Input title="Cidade" name="cidade" value={paciente.endereco.cidade} onChange={handleEnderecoChange} />
-                        <Input title="Logradouro" name="logradouro" value={paciente.endereco.logradouro} onChange={handleEnderecoChange} />
+                        <Input title="Cidade" name="cidade" value={paciente.endereco.cidade || ""} onChange={handleEnderecoChange} />
+                        <Input title="Logradouro" name="logradouro" value={paciente.endereco.logradouro || ""} onChange={handleEnderecoChange} />
                     </div>
                     <div className="flex gap-5">
-                        <Input title="Número" name="numero" value={paciente.endereco.numero} onChange={handleEnderecoChange} className="w-1/4" />
-                        <Input title="Complemento" name="complemento" value={paciente.endereco.complemento} onChange={handleEnderecoChange} className="w-3/4" />
+                        <Input title="Número" name="numero" value={paciente.endereco.numero || ""} onChange={handleEnderecoChange} className="w-1/4" />
+                        <Input title="Complemento" name="complemento" value={paciente.endereco.complemento || ""} onChange={handleEnderecoChange} className="w-3/4" />
                     </div>
                     <div className="flex gap-5">
-                        <Input title="Bairro" name="bairro" value={paciente.endereco.bairro} onChange={handleEnderecoChange} />
-                        <Input title="UF" name="uf" value={paciente.endereco.uf} onChange={handleEnderecoChange} className="w-1/4" />
+                        <Input title="Bairro" name="bairro" value={paciente.endereco.bairro || ""} onChange={handleEnderecoChange} />
+                        <Input title="UF" name="uf" value={paciente.endereco.uf || ""} onChange={handleEnderecoChange} className="w-1/4" />
                     </div>
                     <div className="flex gap-5">
-                        <Input title="CEP" name="cep" value={paciente.endereco.cep} onChange={handleEnderecoChange} className="w-1/3" />
-                        <Input title="Telefone" name="telefone" value={paciente.telefone} onChange={handlePacienteChange} className="w-1/3" />
+                        <Input title="CEP" name="cep" value={paciente.endereco.cep || ""} onChange={handleEnderecoChange} className="w-1/3" />
+                        <Input title="Telefone" name="telefone" value={paciente.telefone || ""} onChange={handlePacienteChange} className="w-1/3" />
                     </div>
-                    <Input title="Ponto de Referência" name="referencia" value={paciente.endereco.referencia} onChange={handleEnderecoChange} />
+                    <Input title="Ponto de Referência" name="referencia" value={paciente.endereco.referencia || ""} onChange={handleEnderecoChange} />
                 </section>
 
 
@@ -290,7 +227,6 @@ export default function Form() {
                         ))}
                     </div>
                 </section>
-
 
                 {/* DADOS DA ANAMNESE */}
                 <section className="flex flex-col gap-7">
@@ -335,6 +271,12 @@ export default function Form() {
                                         type="radio"
                                         name="data_exame_preventivo"
                                         value=""
+                                        onChange={() => { }}
+                                        checked={
+                                            (ficha.dados_anamnese.data_exame_preventivo == null || ficha.dados_anamnese.data_exame_preventivo == "")
+                                            &&
+                                            item == "Não"
+                                        }
                                     />
                                     {item}
                                 </label>
@@ -356,6 +298,17 @@ export default function Form() {
                                                 name={name}
                                                 value={option == "Sim" ? true : false}
                                                 onChange={handleAnamneseChange}
+                                                checked={
+                                                    (option == "Sim" && ficha.dados_anamnese[name] == true)
+                                                        ?
+                                                        true
+                                                        :
+                                                        (option == "Não" && ficha.dados_anamnese[name] == false)
+                                                            ?
+                                                            true
+                                                            :
+                                                            false
+                                                }
                                             />
                                             {option}
                                         </label>
@@ -389,6 +342,12 @@ export default function Form() {
                                         type="radio"
                                         name="ultima_menstruacao"
                                         value=""
+                                        onChange={() => { }}
+                                        checked={
+                                            !(ficha.dados_anamnese.ultima_menstruacao !== null && ficha.dados_anamnese.ultima_menstruacao != "")
+                                            &&
+                                            option == "Não sabe"
+                                        }
                                     />
                                     {option}
                                 </label>
@@ -402,6 +361,17 @@ export default function Form() {
                                         name="sangramento_relacoes"
                                         value={option == "Sim" ? true : false}
                                         onChange={handleAnamneseChange}
+                                        checked={
+                                            (option == "Sim" && ficha.dados_anamnese.sangramento_relacoes == true)
+                                                ?
+                                                true
+                                                :
+                                                (option == "Não" && ficha.dados_anamnese.sangramento_relacoes == false)
+                                                    ?
+                                                    true
+                                                    :
+                                                    false
+                                        }
                                     />
                                     {option}
                                 </label>
@@ -415,6 +385,17 @@ export default function Form() {
                                         name="sangramento_menopausa"
                                         value={option == "Sim" ? true : false}
                                         onChange={handleAnamneseChange}
+                                        checked={
+                                            (option == "Sim" && ficha.dados_anamnese.sangramento_menopausa == true)
+                                                ?
+                                                true
+                                                :
+                                                (option == "Não" && ficha.dados_anamnese.sangramento_menopausa == false)
+                                                    ?
+                                                    true
+                                                    :
+                                                    false
+                                        }
                                     />
                                     {option}
                                 </label>
@@ -422,8 +403,6 @@ export default function Form() {
                         </div>
                     </div>
                 </section>
-
-
 
                 {/* EXAME CLÍNICO */}
                 <section className="flex flex-col gap-5">
@@ -460,6 +439,17 @@ export default function Form() {
                                         name="sinais_dst"
                                         value={option == "Sim" ? true : false}
                                         onChange={handleExameClinicoChange}
+                                        checked={
+                                            (option == "Sim" && ficha.dados_anamnese.sangramento_menopausa == true)
+                                                ?
+                                                true
+                                                :
+                                                (option == "Não" && ficha.dados_anamnese.sangramento_menopausa == false)
+                                                    ?
+                                                    true
+                                                    :
+                                                    false
+                                        }
                                     />
                                     {option}
                                 </label>
@@ -526,7 +516,6 @@ export default function Form() {
                         </div>
                     </div>
                 </section>
-
 
                 {/* RESULTADO DO EXAME */}
                 <section className="flex flex-col gap-5">
@@ -652,7 +641,7 @@ export default function Form() {
                                     /> {val.charAt(0).toUpperCase() + val.slice(1)}
                                 </label>
                             ))}
-                            
+
                         </div>
 
                         <div className="w-1/2 flex flex-col gap-2">
@@ -755,13 +744,13 @@ export default function Form() {
                         <p>RISCO DA PACIENTE:</p>
                         <div className="flex flex-col gap-2">
                             {[
-                                {risco: "Baixo", color: "#4CAF50"},
-                                {risco: "Médio", color: "#FFC107"},
-                                {risco: "Alto", color: "#F44236"}
+                                { risco: "Baixo", color: "#4CAF50" },
+                                { risco: "Médio", color: "#FFC107" },
+                                { risco: "Alto", color: "#F44236" }
                             ].map((item, index) => (
                                 <div className="flex gap-2" key={index}>
-                                    <input 
-                                        type="radio" 
+                                    <input
+                                        type="radio"
                                         name="risco"
                                         value={item.risco}
                                         onChange={handleFichaChange}
@@ -798,8 +787,6 @@ export default function Form() {
                     </div>
                 </section>
 
-
-
                 <div className="w-full fixed bottom-2 -mx-20 px-10 flex justify-center">
                     <button
                         type="button"
@@ -810,6 +797,6 @@ export default function Form() {
                     </button>
                 </div>
             </form>
-        </div >
-    );
+        </div>
+    )
 }

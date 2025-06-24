@@ -36,6 +36,30 @@ func (fr *FichaRepository) CreateFicha(ficha *model.FichaCitopatologica) (*model
 	return ficha, nil
 }
 
+func (fr *FichaRepository) UpdateFicha(ficha *model.FichaCitopatologica) error {
+	query, err := fr.connection.Prepare(`
+		UPDATE ficha_citopatologica
+		SET 
+			paciente_id = $1,
+			numero_protocolo = $2,
+			risco = $3
+		WHERE id = $4
+	`)
+	if err != nil {
+		return err
+	}
+	defer query.Close()
+
+	_, err = query.Exec(
+		ficha.PacienteID,
+		ficha.NumeroProtocolo,
+		ficha.Risco,
+		ficha.ID,
+	)
+
+	return err
+}
+
 func (fr *FichaRepository) GetFichasByPaciente(idPaciente int) ([]model.FichaCitopatologica, error) {
 	query, err := fr.connection.Prepare("SELECT * FROM ficha_citopatologica WHERE paciente_id = $1")
 	if err != nil {
@@ -97,15 +121,14 @@ func (fr *FichaRepository) DeleteFichaByID(id *int) error {
 	return nil
 }
 
-func (fr *FichaRepository) GetLastFichaWithRiskByIdPaciente(idPaciente int) (*model.FichaCitopatologica, error){
+func (fr *FichaRepository) GetLastFichaWithRiskByIdPaciente(idPaciente int) (*model.FichaCitopatologica, error) {
 	query, err := fr.connection.Prepare("SELECT * FROM ficha_citopatologica WHERE paciente_id = $1 AND risco IS NOT NULL ORDER BY id DESC LIMIT 1")
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
-	
 	defer query.Close()
-	
+
 	var fichaObj model.FichaCitopatologica
 
 	err = query.QueryRow(idPaciente).Scan(

@@ -61,3 +61,17 @@ func (fu *FichaUseCase) CreateFichaByPaciente(ficha *model.FichaCitopatologica) 
 
 	return ficha, nil
 }
+
+func (fu *FichaUseCase) UpdateFicha(ficha *model.FichaCitopatologica) error {
+	err := fu.repository.UpdateFicha(ficha)
+
+	err = fu.anamneseRepository.UpdateDadosAnamnese(ficha.DadosAnamnese)
+
+	err = fu.exameClinicoRepository.UpdateExameClinico(ficha.ExameClinico)
+
+	err = fu.identificacaoLabRepository.UpdateIdentificacaoLab(ficha.IdentificacaoLaboratorio)
+
+	err = fu.resultadoRepository.UpdateResultado(ficha.Resultado)
+
+	return err
+}

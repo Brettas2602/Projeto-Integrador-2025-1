@@ -10,61 +10,75 @@ import RecentPacient from "@/components/RecentPacient";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useUser } from "@/context/userContext";
 
 export default function Dashboard() {
 
+    const { paciente, logout } = useUser()
+    const [message, setMessage] = useState("")
     const [pacientes, setPacientes] = useState([])
     const [donutChartData, setDonutChartData] = useState([
-    ["Nível de risco", "Número de pacientes"],
-    ["Alto", 0],
-    ["Médio", 0],
-    ["Baixo", 0]
+        ["Nível de risco", "Número de pacientes"],
+        ["Alto", 0],
+        ["Médio", 0],
+        ["Baixo", 0]
     ]);
     const [barChartData, setBarChartData] = useState([
         ["Mês", "Número de consultas"]
     ])
 
-useEffect(() => {
-    const fetchData =
-        async () => {
-        try {
-            const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
-            const {data: resPaciente} = await axios.get("http://localhost:8000/paciente/getlastfour");
-            const {data: consultasPorMes} = await axios.get("http://localhost:8000/consulta/getcountconsultasbyallmonths")
-            setPacientes(resPaciente)
+    useEffect(() => {
+        const fetchData =
+            async () => {
+                try {
+                    const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
+                    const { data: resPaciente } = await axios.get("http://localhost:8000/paciente/getlastfour");
+                    const { data: consultasPorMes } = await axios.get("http://localhost:8000/consulta/getcountconsultasbyallmonths")
+                    setPacientes(resPaciente)
 
-            const riscos = {
-            "Alto": 0,
-            "Médio": 0,
-            "Baixo": 0
+                    const riscos = {
+                        "Alto": 0,
+                        "Médio": 0,
+                        "Baixo": 0
+                    };
+
+                    res.data.forEach(item => {
+                        if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
+                        if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
+                        if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
+                    });
+
+                    setDonutChartData([
+                        ["Nível de risco", "Número de pacientes"],
+                        ["Alto", riscos["Alto"]],
+                        ["Médio", riscos["Médio"]],
+                        ["Baixo", riscos["Baixo"]]
+                    ]);
+
+                    const consultas = [
+                        ["Mês", "Número de consultas"]
+                    ]
+
+                    if (consultasPorMes != null) {
+                        consultasPorMes.forEach((item) => {
+                            consultas.push([item.mes, item.total_consultas])
+                        })
+                    }
+
+                    setBarChartData(consultas)
+                } catch (error) {
+                    console.error("Erro ao buscar dados:", error);
+                }
             };
-            
-            res.data.forEach(item => {
-                if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
-                if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
-                if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
-            });
-            
-            setDonutChartData([
-                ["Nível de risco", "Número de pacientes"],
-                ["Alto", riscos["Alto"]],
-                ["Médio", riscos["Médio"]],
-                ["Baixo", riscos["Baixo"]]
-            ]);
 
-            const consultas = [
-                ["Mês", "Número de consultas"]
-            ] 
-
-            consultasPorMes.forEach((item) => {
-                consultas.push([item.mes, item.total_consultas])
-            })
-
-            setBarChartData(consultas)
-        } catch (error) {
-            console.error("Erro ao buscar dados:", error);
+        const mensagem = localStorage.getItem("mensagemFormulario");
+        if (mensagem) {
+            setMessage(mensagem);
+            localStorage.removeItem("mensagemConsulta");
+            const timer = setTimeout(() => {
+                setMessage(null);
+            }, 4000);
         }
-        };
 
         fetchData();
     }, []);
@@ -92,12 +106,16 @@ useEffect(() => {
                 </div>
             </section>
 
+            {message && (
+                <p className="text-green-600 bg-green-100 mx-auto mt-1 p-1 rounded-md">{message}</p>
+            )}
+
             <section className="min-h-[90vh] grid gap-5 px-8 py-5 justify-items-center">
 
                 <div className="flex justify-between items-center flex-wrap ldx:items-stretch flex-row w-[95%] sm:w-[90%] ldx:w-full gap-4 ldx:gap-0">
 
                     <div className="w-full ldx:w-[35%] flex flex-col justify-between gap-4">
-                        <Link 
+                        <Link
                             href={"/form"}
                             className="hover:scale-[1.06] transition w-full flex items-center px-5 py-3 gap-3 text-xl bg-white shadow-md shadow-gray-400 rounded-lg"
                         >
@@ -105,7 +123,7 @@ useEffect(() => {
                             Preencher ficha citopatológica
                         </Link>
 
-                        <button 
+                        <button
                             className="hover:scale-[1.06] transition w-full flex items-center px-5 py-3 gap-3 text-xl bg-white shadow-md shadow-gray-400 rounded-lg"
                         >
                             <MdScreenSearchDesktop className="w-12 h-fit" />
@@ -181,7 +199,7 @@ useEffect(() => {
                             data={barChartData}
                             options={{
                                 legend: "none",
-                                
+
                             }}
                             width={"100%"}
                             height={"100%"}

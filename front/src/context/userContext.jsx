@@ -50,7 +50,7 @@ export function UserProvider({ children }) {
     }
 
     return (
-        <UserContext.Provider value={{medico, setMedico, enfermeiro, setEnfermeiro, paciente, setPaciente}}>
+        <UserContext.Provider value={{medico, setMedico, enfermeiro, setEnfermeiro, paciente, setPaciente, logout}}>
             {children}
         </UserContext.Provider>
     )

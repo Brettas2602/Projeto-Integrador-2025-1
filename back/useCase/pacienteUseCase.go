@@ -54,6 +54,15 @@ func (pu *PacienteUseCase) CreatePaciente(paciente *model.Paciente) (*model.Paci
 
 	return createdPaciente, nil
 }
+
+func (pu *PacienteUseCase) UpdatePaciente(paciente *model.Paciente) error {
+	err := pu.repository.UpdatePaciente(paciente)
+	
+	err = pu.enderecoRepository.UpdateEndereco(paciente.Endereco)
+
+	return err
+}
+
 func (pu *PacienteUseCase) GetPacienteById(id int) (*model.Paciente, error) {
 	paciente, err := pu.repository.GetPacienteById(id)
 	if err != nil {
