@@ -1,7 +1,6 @@
 "use client"
 
-import { FiMenu } from "react-icons/fi";
-import { HiOutlineUserCircle } from "react-icons/hi2";
+import { IoHelpCircleOutline } from "react-icons/io5"
 import { CiMedicalClipboard } from "react-icons/ci";
 import { MdScreenSearchDesktop } from "react-icons/md";
 import { ImStatsDots } from "react-icons/im";
@@ -10,9 +9,13 @@ import RecentPacient from "@/components/RecentPacient";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useUser } from "@/context/userContext";
+import { useRouter } from "next/navigation"
+import { IoIosLogOut } from "react-icons/io";
 
 export default function Dashboard() {
-
+    const router = useRouter()
+    const{medico, enfermeiro, logout} = useUser()
     const [pacientes, setPacientes] = useState([])
     const [donutChartData, setDonutChartData] = useState([
     ["Nível de risco", "Número de pacientes"],
@@ -24,58 +27,71 @@ export default function Dashboard() {
         ["Mês", "Número de consultas"]
     ])
 
-useEffect(() => {
-    const fetchData =
-        async () => {
-        try {
-            const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
-            const {data: resPaciente} = await axios.get("http://localhost:8000/paciente/getlastfour");
-            const {data: consultasPorMes} = await axios.get("http://localhost:8000/consulta/getcountconsultasbyallmonths")
-            setPacientes(resPaciente)
-
-            const riscos = {
-            "Alto": 0,
-            "Médio": 0,
-            "Baixo": 0
-            };
-            
-            res.data.forEach(item => {
-                if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
-                if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
-                if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
-            });
-            
-            setDonutChartData([
-                ["Nível de risco", "Número de pacientes"],
-                ["Alto", riscos["Alto"]],
-                ["Médio", riscos["Médio"]],
-                ["Baixo", riscos["Baixo"]]
-            ]);
-
-            const consultas = [
-                ["Mês", "Número de consultas"]
-            ] 
-
-            consultasPorMes.forEach((item) => {
-                consultas.push([item.mes, item.total_consultas])
-            })
-
-            setBarChartData(consultas)
-        } catch (error) {
-            console.error("Erro ao buscar dados:", error);
+    function handleLogout() {
+        if (medico) {
+            logout("medico")
+            router.replace("/")
+        } else if (enfermeiro) {
+            logout("enfermeiro")
+            router.replace("/")
         }
-        };
+    }
+    
+    useEffect(() => {
+        if (!medico && !enfermeiro) {
+            router.replace("/")
+        }
+    }, [])
 
-        fetchData();
-    }, []);
+    useEffect(() => {
+        const fetchData =
+            async () => {
+                try {
+                    const res = await axios.get("http://localhost:8000/paciente/getcountbyrisk");
+                    const {data: resPaciente} = await axios.get("http://localhost:8000/paciente/getlastfour");
+                    const {data: consultasPorMes} = await axios.get("http://localhost:8000/consulta/getcountconsultasbyallmonths")
+                    setPacientes(resPaciente)
+
+                    const riscos = {
+                    "Alto": 0,
+                    "Médio": 0,
+                    "Baixo": 0
+                    };
+                    
+                    res.data.forEach(item => {
+                        if (item.risco === "Alto") riscos["Alto"] = item.quantidade;
+                        if (item.risco === "Médio") riscos["Médio"] = item.quantidade;
+                        if (item.risco === "Baixo") riscos["Baixo"] = item.quantidade;
+                    });
+                    
+                    setDonutChartData([
+                        ["Nível de risco", "Número de pacientes"],
+                        ["Alto", riscos["Alto"]],
+                        ["Médio", riscos["Médio"]],
+                        ["Baixo", riscos["Baixo"]]
+                    ]);
+
+                    const consultas = [
+                        ["Mês", "Número de consultas"]
+                    ] 
+
+                    consultasPorMes.forEach((item) => {
+                        consultas.push([item.mes, item.total_consultas])
+                    })
+
+                    setBarChartData(consultas)
+                } catch (error) {
+                    console.error("Erro ao buscar dados:", error);
+                }
+            };
+
+            fetchData();
+        }, []);
 
     return (
         <div className="w-full bg-[#F9F5F5] flex flex-col">
             <section className="bg-[#FFD8D8] w-full flex items-center justify-between px-5 py-3">
-                <FiMenu
-                    className="w-10 lg:w-12 h-fit lg:mr-16"
-                />
-
+                <IoHelpCircleOutline className="w-12 lg:w-16 h-fit cursor-pointer" />
                 <div className="flex flex-col items-center">
                     <img
                         src="/Logo_SobreVidas_Sem_Fundo.png"
@@ -85,10 +101,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <p className="text-xl hidden lg:block">Perfil</p>
-                    <HiOutlineUserCircle
-                        className="w-12 lg:w-16 h-fit"
-                    />
+                    <IoIosLogOut className="w-9 lg:w-12 h-fit cursor-pointer" onClick={handleLogout}/>
                 </div>
             </section>
 

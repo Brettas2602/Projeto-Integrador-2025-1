@@ -16,7 +16,7 @@ export default function ConsultasAgendadasPaciente() {
 
     useEffect(() => {
         if (!paciente) {
-            router.replace("/login  Paciente");
+            router.replace("/loginPaciente");
         }
     }, [paciente])
 

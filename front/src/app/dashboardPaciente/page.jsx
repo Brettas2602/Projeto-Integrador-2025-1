@@ -14,10 +14,19 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import { IoIosLogOut } from "react-icons/io";
+import { useRouter } from "next/navigation"
 
 export default function DashboardPaciente() {
-    const { paciente } = useUser();
+    const router = useRouter()
+    const { paciente, logout } = useUser();
     const [message, setMessage] = useState("")
+
+    function handleLogout() {
+        if (paciente) {
+            logout("paciente")
+            router.replace("/loginPaciente")
+        }
+    }
 
     useEffect(() => {
         const mensagem = localStorage.getItem("mensagemConsulta");
@@ -64,7 +73,7 @@ export default function DashboardPaciente() {
                     </div>
 
                 <div className="flex items-center gap-4">
-                    <IoIosLogOut className="w-9 lg:w-16 h-fit cursor-pointer"/>
+                    <IoIosLogOut className="w-9 lg:w-12 h-fit cursor-pointer" onClick={handleLogout}/>
                     </div>
                 </section>
 

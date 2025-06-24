@@ -61,7 +61,7 @@ export default function LoginEnfermeiro() {
                     
             <input type="number" placeholder="CPF" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setCpf(e.target.value)}/>
 
-            <input type="text" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none" onChange={(e) => setPassword(e.target.value)} />
+            <input type="text" placeholder="Senha" className="bg-[#F4EEEE] p-1 sm:p-2 rounded-md outline-none w-full" onChange={(e) => setPassword(e.target.value)} />
                 
             
             {message && (

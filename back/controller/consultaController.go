@@ -50,9 +50,7 @@ func (cc *ConsultaController) GetAllConsultas(ctx *gin.Context) {
 	}
 
 	if consultas == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Item não encontrado na base de dados",
-		})
+		ctx.JSON(http.StatusAccepted, consultas)
 		return
 	}
 
