@@ -78,6 +78,52 @@ func (pr *PacienteRepository) UpdatePaciente(paciente *model.Paciente) error {
 	return err
 }
 
+func (pr *PacienteRepository) GetAllPacientes() ([]model.Paciente, error) {
+	rows, err := pr.connection.Query("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, senha, nacionalidade, data_nascimento, cor, telefone, escolaridade, EXTRACT(YEAR FROM AGE(CURRENT_DATE, data_nascimento))::int AS idade FROM paciente")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var pacientes []model.Paciente
+
+	for rows.Next() {
+		var paciente model.Paciente
+
+		err := rows.Scan(
+			&paciente.ID,
+			&paciente.EnderecoID,
+			&paciente.IdUbs,
+			&paciente.CartaoSUS,
+			&paciente.Nome,
+			&paciente.NomeMae,
+			&paciente.Apelido,
+			&paciente.CPF,
+			&paciente.Senha,
+			&paciente.Nacionalidade,
+			&paciente.DataNascimento,
+			&paciente.Cor,
+			&paciente.Telefone,
+			&paciente.Escolaridade,
+			&paciente.Idade,
+		)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil, nil
+			}
+			return nil, err
+		}
+
+		pacientes = append(pacientes, paciente)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return pacientes, nil
+}
 
 func (pr *PacienteRepository) GetPacienteById(id int) (*model.Paciente, error){
 	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE id= $1`)
@@ -225,7 +271,7 @@ func (pc *PacienteRepository) DeletePacienteByID(id int) error {
 }
 
 func (pr *PacienteRepository) GetAllPacienteByName(nome string) ([]model.Paciente, error) {
-	query, err := pr.connection.Prepare("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE nome ILIKE $1")
+	query, err := pr.connection.Prepare("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade, EXTRACT(YEAR FROM AGE(CURRENT_DATE, data_nascimento))::int AS idade FROM paciente WHERE nome ILIKE $1")
 
 	if err != nil {
 		return nil, err
@@ -254,6 +300,7 @@ func (pr *PacienteRepository) GetAllPacienteByName(nome string) ([]model.Pacient
 			&paciente.Cor,
 			&paciente.Telefone,
 			&paciente.Escolaridade,
+			&paciente.Idade,
 		)
 
 		if err != nil {
@@ -274,7 +321,7 @@ func (pr *PacienteRepository) GetAllPacienteByName(nome string) ([]model.Pacient
 }
 
 func (pr *PacienteRepository) GetAllPacienteByAge(idadeInicial, idadeFinal int) ([]model.Paciente, error) {
-	query, err := pr.connection.Prepare("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE DATE_PART('year', AGE(data_nascimento)) BETWEEN $1 AND $2")
+	query, err := pr.connection.Prepare("SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade, EXTRACT(YEAR FROM AGE(CURRENT_DATE, data_nascimento))::int AS idade FROM paciente WHERE DATE_PART('year', AGE(data_nascimento)) BETWEEN $1 AND $2")
 	if err != nil {
 		return nil, err
 	}
@@ -302,6 +349,7 @@ func (pr *PacienteRepository) GetAllPacienteByAge(idadeInicial, idadeFinal int) 
 			&paciente.Cor,
 			&paciente.Telefone,
 			&paciente.Escolaridade,
+			&paciente.Idade,
 		)
 
 		if err != nil {
@@ -322,7 +370,7 @@ func (pr *PacienteRepository) GetAllPacienteByAge(idadeInicial, idadeFinal int) 
 }
 
 func (pr *PacienteRepository) GetAllPacienteByRisk(risco string) ([]model.Paciente, error) {
-	query, err := pr.connection.Prepare("SELECT p.id, p.endereco_id, p.id_ubs, p.cartao_sus, p.nome, p.nome_mae, p.apelido, p.cpf, p.nacionalidade, p.data_nascimento, p.cor, p.telefone, p.escolaridade FROM paciente p JOIN ficha_citopatologica f ON f.id = (SELECT id FROM ficha_citopatologica WHERE paciente_id = p.id ORDER BY id DESC LIMIT 1) WHERE f.risco = $1 ORDER BY p.nome ASC")
+	query, err := pr.connection.Prepare("SELECT p.id, p.endereco_id, p.id_ubs, p.cartao_sus, p.nome, p.nome_mae, p.apelido, p.cpf, p.nacionalidade, p.data_nascimento, p.cor, p.telefone, p.escolaridade, EXTRACT(YEAR FROM AGE(CURRENT_DATE, data_nascimento))::int AS idade FROM paciente p JOIN ficha_citopatologica f ON f.id = (SELECT id FROM ficha_citopatologica WHERE paciente_id = p.id ORDER BY id DESC LIMIT 1) WHERE f.risco = $1 ORDER BY p.nome ASC")
 	if err != nil {
 		return nil, err
 	}
@@ -353,6 +401,7 @@ func (pr *PacienteRepository) GetAllPacienteByRisk(risco string) ([]model.Pacien
 			&paciente.Cor,
 			&paciente.Telefone,
 			&paciente.Escolaridade,
+			&paciente.Idade,
 		)
 
 		if err != nil {
