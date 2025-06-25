@@ -3,10 +3,31 @@
 import Input from "@/components/FormInput";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useUser } from "@/context/userContext";
+import { useState, useEffect } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 
 export default function Form() {
+
+    const [ubs, setUbs] = useState({})
+    const { medico, enfermeiro } = useUser();
+    
+    useEffect(() => {
+    async function fetchUbs() {
+        try {
+            if (medico || enfermeiro) {
+                const { data: res } = await axios.get(`http://localhost:8000/ubs/1`);
+                setUbs(res);
+                console.log(res)
+            }
+        } catch (error) {
+            console.error("Erro ao buscar UBS:", error);
+        }
+    }
+
+    fetchUbs();
+}, [medico, enfermeiro]);
+
 
     const [paciente, setPaciente] = useState({
         id_ubs: 1,
@@ -186,14 +207,15 @@ export default function Form() {
                 {/* Dados iniciais */}
                 <section className="flex flex-col gap-5">
                     <div className="flex justify-between gap-5">
-                        <Input disabled title="UF" className="w-1/4" />
-                        <Input disabled title="CNES" type="number" className="w-1/4" />
-                        <Input disabled title="Nº Protocolo" name="numero_protocolo" value={ficha.numero_protocolo} onChange={handleFichaChange} type="number" className="w-1/4" />
+                        <Input type="text" title="UF" className="w-1/4" value={ubs?.endereco?.uf} />
+                        {console.log(ubs)}
+                        <Input title="CNES" type="number" className="w-1/4" value = {ubs?.cnes} />
+                        <Input title="Nº Protocolo" name="numero_protocolo" value={ficha.numero_protocolo} onChange={handleFichaChange} type="number" className="w-1/4" />
                     </div>
-                    <Input disabled title="Unidade de Saúde" />
+                    <Input title="Unidade de Saúde" value={ubs?.nome} />
                     <div className="flex gap-5">
-                        <Input disabled title="Município" className="w-1/2" />
-                        <Input disabled title="Prontuário" className="w-1/2" />
+                        <Input title="Município" className="w-1/2" value={ubs.endereco?.cidade} />
+                        <Input title="Prontuário" className="w-1/2" value={ubs.prontuario} />
                     </div>
                 </section>
 
