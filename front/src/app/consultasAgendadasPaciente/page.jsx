@@ -54,9 +54,12 @@ export default function ConsultasAgendadasPaciente() {
             <div className="w-[90%] flex flex-col items-center flex-wrap xm:flex-row xm:justify-center ">
 
                 {
+                    (consultas)?
                     consultas.map((consulta, index) => (
                         <ShowConsultation consulta = {consulta} key= {index}></ShowConsultation>
                     ))
+                    :
+                    <p className="mt-7">Não há consultas agendadas.</p>    
                 }
 
             </div>

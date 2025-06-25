@@ -287,9 +287,7 @@ func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context) {
 	}
 
 	if resultadosFichas == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Item não encontrado na base de dados",
-		})
+		ctx.JSON(http.StatusAccepted, resultadosFichas)
 		return
 	}
 

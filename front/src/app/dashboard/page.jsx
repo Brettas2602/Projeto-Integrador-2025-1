@@ -78,12 +78,13 @@ export default function Dashboard() {
                     const consultas = [
                         ["Mês", "Número de consultas"]
                     ]
-
-                    consultasPorMes.forEach((item) => {
-                        consultas.push([item.mes, item.total_consultas])
-                    })
-
-                    setBarChartData(consultas)
+                    if (consultasPorMes) {
+                        consultasPorMes.forEach((item) => {
+                            consultas.push([item.mes, item.total_consultas])
+                        })
+    
+                        setBarChartData(consultas)
+                    }
                 } catch (error) {
                     console.error("Erro ao buscar dados:", error);
                 }

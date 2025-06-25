@@ -10,12 +10,15 @@ export default function ShowConsultation({ consulta }) {
     });
 
     const [paciente, setPaciente] = useState([])
+    const [ubs, setUbs] = useState("")
 
     useEffect(() => {
         async function fetchPaciente() {
             try {
-                const { data } = await axios.get(`http://localhost:8000/paciente/getbyid/${consulta.paciente_id}`)
-                setPaciente(data)
+                const { data: res } = await axios.get(`http://localhost:8000/paciente/getbyid/${consulta.paciente_id}`)
+                const { data: res1} = await axios.get(`http://localhost:8000/ubs/${consulta.ubs_id}`)
+                setPaciente(res)
+                setUbs(res1)
             } catch (error) {
                 console.error("Erro ao buscar paciente ", error)
             }
@@ -23,11 +26,12 @@ export default function ShowConsultation({ consulta }) {
         fetchPaciente();
     }, [])
     return (
-        <div className="bg-white shadow-md shadow-gray-400 rounded-lg w-[330px] h-[140px] flex flex-col justify-center m-5 pl-5">
+        <div className="bg-white shadow-md shadow-gray-400 rounded-lg w-[330px] h-[190px] flex flex-col justify-center m-5 pl-5">
             <p>Nome: {paciente.nome}</p>
             <p>CPF: {paciente.cpf}</p>
             <p>Data: {dataFormatada}</p>
             <p>Horário: {horaFormatada}</p>
+            <p>UBS: {ubs.nome}</p>
         </div>
     )
 }

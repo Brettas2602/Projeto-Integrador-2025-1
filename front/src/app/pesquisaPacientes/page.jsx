@@ -135,14 +135,23 @@ export default function PesquisaUsuarios() {
                             <div key={i} className="flex justify-between p-3 border rounded bg-gray-50">
                                 <p className="w-1/4"><strong>Nome:</strong> {paciente.nome}</p>
                                 <p className="w-1/4"><strong>Idade:</strong> {paciente.idade}</p>
-                                <p className="w-1/4"><strong>Risco:</strong> {paciente.fichas[0].risco}</p>
-                                <button
-                                    className="flex items-center gap-2 bg-green-700 text-white p-2 rounded-xl"
-                                    onClick={() => router.push(`/editForm/${paciente.cpf}`)}
-                                >
-                                    <MdOutlineEdit />
-                                    Editar Ficha
-                                </button>
+                                <p className="w-1/4"><strong>Risco:</strong> {(paciente.fichas) ? paciente.fichas[0].risco : "Indefinido"}</p>
+                                {(paciente.fichas) ?
+                                    <button
+                                        className="flex items-center gap-2 bg-green-700 text-white p-2 rounded-xl"
+                                        onClick={() =>router.push(`/editForm/${paciente.cpf}`)}
+                                    >
+                                        <MdOutlineEdit />
+                                        Editar Ficha
+                                    </button>
+                                    :
+                                    <button
+                                        className="flex items-center gap-2 bg-red-700 text-white p-2 rounded-xl"
+                                    >
+                                        <MdOutlineEdit />
+                                        Sem registros
+                                    </button>
+                                }
                             </div>
                         ))
                         :
