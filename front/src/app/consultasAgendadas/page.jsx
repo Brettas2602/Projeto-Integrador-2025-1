@@ -5,10 +5,19 @@ import { FiArrowLeft } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ShowConsultation from "@/components/ShowConsultation";
+import { useUser } from "@/context/userContext";
+import { useRouter } from "next/navigation";
 
 export default function ConsultasAgendadas() {
-    
+    const router = useRouter()
+    const {medico, enfermeiro} = useUser()
     const [consultas, setConsultas] = useState([])
+
+    useEffect(() => {
+        if (!medico && !enfermeiro) {
+            router.replace("/")
+        }
+    }, [])
 
     useEffect(() => {
         async function requestConsultas() {
@@ -36,8 +45,11 @@ export default function ConsultasAgendadas() {
             </section>
 
             <div className="w-[90%] flex justify-between flex-wrap">
-                {consultas.map((consulta, index) => (
-                    <ShowConsultation consulta = {consulta} key= {index}></ShowConsultation>
+                {(!consultas)?
+                <p>Não há consultas agendadas</p>
+                :
+                consultas.map((consulta, index) => (
+                <ShowConsultation consulta = {consulta} key= {index}></ShowConsultation>
                 ))}
             </div>
         </div>

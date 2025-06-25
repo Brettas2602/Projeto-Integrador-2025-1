@@ -33,7 +33,6 @@ export default function OrientacaoResultado() {
         fetchExames();
     }, [paciente]);
 
-    if (!exames || exames.length === 0) return <p>Nenhum exame encontrado.</p>;
 
     return (
         <div className="w-full h-screen text-xl xs:text-2xl">
@@ -55,7 +54,10 @@ export default function OrientacaoResultado() {
             </section>
 
             <div className="w-full flex flex-col items-center mt-7 gap-6">
-                {exames.map((exame, index) => (
+                {(!exames) ?
+                    <p>Não há orientações registradas.</p>
+                    :
+                    exames.map((exame, index) => (
                     <ExamOrientation exam={exame} key={index} />
                 ))}
             </div>
