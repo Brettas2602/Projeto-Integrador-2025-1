@@ -22,7 +22,7 @@ export default function ConsultasAgendadas() {
     useEffect(() => {
         async function requestConsultas() {
             try {
-                const { data } = await axios.get(`http://localhost:8000/consulta/getallconsultas`)
+                const { data } = await axios.get(`http://localhost:8000/consulta/getallconsultasagendadas`)
                 setConsultas(data)
                 console.log(data)
             } catch (error) {
@@ -44,7 +44,7 @@ export default function ConsultasAgendadas() {
                 <img src="/Logo_SobreVidas_Sem_Fundo.png" alt="Logo ou imagem decorativa" className="w-24 h-auto"/>
             </section>
 
-            <div className="w-[90%] flex justify-between flex-wrap">
+            <div className="w-[90%] flex justify-between flex-wrap m-auto">
                 {(!consultas)?
                 <p>Não há consultas agendadas</p>
                 :
