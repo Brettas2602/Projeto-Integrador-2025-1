@@ -54,6 +54,15 @@ func (pu *PacienteUseCase) CreatePaciente(paciente *model.Paciente) (*model.Paci
 
 	return createdPaciente, nil
 }
+
+func (pu *PacienteUseCase) UpdatePaciente(paciente *model.Paciente) error {
+	err := pu.repository.UpdatePaciente(paciente)
+	
+	err = pu.enderecoRepository.UpdateEndereco(paciente.Endereco)
+
+	return err
+}
+
 func (pu *PacienteUseCase) GetPacienteById(id int) (*model.Paciente, error) {
 	paciente, err := pu.repository.GetPacienteById(id)
 	if err != nil {
@@ -365,4 +374,14 @@ func (pu *PacienteUseCase) GetLastFichaWithRiskByIdPaciente(id int) (*model.Fich
 	}
 
 	return ficha, nil
+}
+
+func (pu *PacienteUseCase) GetAllConsultasByIdPaciente(id int) ([]model.Consultas, error){
+	consultas, err:= pu.consultasRepository.GetAllConsultasByIdPaciente(id)
+	if err != nil{
+		return nil, err
+	}
+
+	return consultas, nil 
+
 }

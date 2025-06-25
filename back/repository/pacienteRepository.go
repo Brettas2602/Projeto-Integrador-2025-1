@@ -34,6 +34,51 @@ func (pr *PacienteRepository) CreatePaciente(paciente *model.Paciente) (*model.P
 	return paciente, nil
 }
 
+func (pr *PacienteRepository) UpdatePaciente(paciente *model.Paciente) error {
+	query, err := pr.connection.Prepare(`
+		UPDATE paciente 
+		SET 
+			endereco_id = $1,
+			id_ubs = $2,
+			cartao_sus = $3,
+			nome = $4,
+			nome_mae = $5,
+			apelido = $6,
+			cpf = $7,
+			nacionalidade = $8,
+			data_nascimento = $9,
+			cor = $10,
+			telefone = $11,
+			escolaridade = $12,
+			senha = $13
+		WHERE cpf = $14
+	`)
+	if err != nil {
+		return err
+	}
+	defer query.Close()
+
+	_, err = query.Exec(
+		paciente.EnderecoID,
+		paciente.IdUbs,
+		paciente.CartaoSUS,
+		paciente.Nome,
+		paciente.NomeMae,
+		paciente.Apelido,
+		paciente.CPF,
+		paciente.Nacionalidade,
+		paciente.DataNascimento,
+		paciente.Cor,
+		paciente.Telefone,
+		paciente.Escolaridade,
+		paciente.Senha,
+		paciente.CPF,
+	)
+
+	return err
+}
+
+
 func (pr *PacienteRepository) GetPacienteById(id int) (*model.Paciente, error){
 	query, err := pr.connection.Prepare(`SELECT id, endereco_id, id_ubs, cartao_sus, nome, nome_mae, apelido, cpf, nacionalidade, data_nascimento, cor, telefone, escolaridade FROM paciente WHERE id= $1`)
 	if err != nil {

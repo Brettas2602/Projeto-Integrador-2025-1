@@ -52,6 +52,30 @@ func (er *ExameClinicoRepository) CreateExameClinico(exame *model.ExameClinico) 
 	return exame, nil
 }
 
+func (er *ExameClinicoRepository) UpdateExameClinico(exame *model.ExameClinico) error {
+	query := `
+		UPDATE exame_clinico SET
+			ficha_id = $1,
+			inspecao_colo = $2,
+			sinais_dst = $3,
+			data_coleta = $4,
+			responsavel = $5
+		WHERE id = $6
+	`
+
+	_, err := er.connection.Exec(
+		query,
+		exame.FichaID,
+		exame.InspecaoColo,
+		exame.SinaisDST,
+		exame.DataColeta,
+		exame.Responsavel,
+		exame.ID,
+	)
+
+	return err
+}
+
 func (er *ExameClinicoRepository) DeleteExameClinicoByID (id *int) error {
 	query, err := er.connection.Prepare("DELETE FROM exame_clinico WHERE id = $1")
 	if err != nil {

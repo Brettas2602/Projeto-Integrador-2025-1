@@ -74,6 +74,7 @@ func main() {
 	FichaController := controller.NewFichaRepository(FichaUseCase)
 
 	server.POST("/ficha", FichaController.CreateFichaByPaciente)
+	server.PUT("/ficha", FichaController.UpdateFicha)
 
 	PacienteRepository := repository.NewPacienteRepository(dbConnection)
 	PacienteUseCase := useCase.NewPacienteUseCase(
@@ -98,7 +99,9 @@ func main() {
 	server.GET("/paciente/resultadosbyid/:pacienteId", PacienteController.GetResultadosByPacienteId)
 	server.GET("/paciente/getlastconsultationbyid/:pacienteId", PacienteController.GetLastConsultationByIdPaciente)
 	server.GET("/paciente/getlastfichawhithriskbyid/:pacienteId", PacienteController.GetLastFichaWithRiskByIdPaciente)
+	server.GET("/paciente/getallconsultasbyid/:pacienteId", PacienteController.GetAllConsultasByIdPaciente)
 	server.POST("/paciente", PacienteController.CreatePaciente)
+	server.PUT("/paciente", PacienteController.UpdatePaciente)
 
 	server.Run(":8000")
 }

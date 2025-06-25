@@ -40,12 +40,33 @@ func (pc *PacienteController) CreatePaciente(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, createdPaciente)
 }
+
+func (pc *PacienteController) UpdatePaciente(ctx *gin.Context) {
+	var paciente model.Paciente
+	err := ctx.BindJSON(&paciente)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Erro ao fazer bind do JSON: " + err.Error(),
+		})
+		return
+	}
+
+	err = pc.useCase.UpdatePaciente(&paciente)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Erro ao atualizar paciente: " + err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, paciente)
+}
+
 func (pc *PacienteController) GetPacienteById(ctx *gin.Context) {
 	pacienteIdStr := ctx.Param("pacienteId")
 	pacienteId, err := strconv.Atoi(pacienteIdStr)
 
-
-	if pacienteId <= 0 || err != nil{
+	if pacienteId <= 0 || err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Id inválido",
 		})
@@ -96,30 +117,28 @@ func (pc *PacienteController) GetPacienteByCpf(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, paciente)
 }
 
-func (pc *PacienteController) GetLastFourPacientes(ctx *gin.Context){
-    pacientes, err := pc.useCase.GetLastFourPacientes()
-        if err != nil{
-            ctx.JSON(http.StatusNotFound, gin.H{
-                "message":err.Error(),
-            })
-            return
-        }
+func (pc *PacienteController) GetLastFourPacientes(ctx *gin.Context) {
+	pacientes, err := pc.useCase.GetLastFourPacientes()
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
+	if pacientes == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
 
-        if pacientes == nil{
-            ctx.JSON(http.StatusNotFound, gin.H{
-                "message": "Item não encontrado na base de dados",
-            })
-            return
-        }
-
-
-    ctx.JSON(http.StatusOK, pacientes)
+	ctx.JSON(http.StatusOK, pacientes)
 }
 
-func (pc *PacienteController) GetAllPacienteByName(ctx *gin.Context){
+func (pc *PacienteController) GetAllPacienteByName(ctx *gin.Context) {
 	pacienteNome := ctx.Param("pacienteNome")
-	if strings.TrimSpace(pacienteNome) == ""{
+	if strings.TrimSpace(pacienteNome) == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Nome não pode ser nulo",
 		})
@@ -127,71 +146,71 @@ func (pc *PacienteController) GetAllPacienteByName(ctx *gin.Context){
 	}
 
 	pacientes, err := pc.useCase.GetAllPacienteByName(pacienteNome)
-		if err != nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message":err.Error(),
-			})
-			return
-		}
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-		if pacientes == nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message": "Item não encontrado na base de dados",
-			})
-			return
-		}
+	if pacientes == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, pacientes)
 }
 
-func (pc *PacienteController) GetAllPacienteByAge(ctx *gin.Context){
+func (pc *PacienteController) GetAllPacienteByAge(ctx *gin.Context) {
 	idadeInicialStr := ctx.Param("idadeMin")
 	idadeFinalStr := ctx.Param("idadeMax")
 
 	idadeInicialPaciente, err := strconv.Atoi(idadeInicialStr)
 	idadeFinalPaciente, err2 := strconv.Atoi(idadeFinalStr)
 
-	if err != nil || err2 != nil{
+	if err != nil || err2 != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-		"message": "Idades inválidas",
+			"message": "Idades inválidas",
 		})
 	}
 
-	if idadeInicialPaciente < 0 || idadeFinalPaciente < 0{
+	if idadeInicialPaciente < 0 || idadeFinalPaciente < 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Idades inválidas",
 		})
 		return
 	}
 
-	if idadeInicialPaciente > idadeFinalPaciente{
+	if idadeInicialPaciente > idadeFinalPaciente {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message":"Idade inicial não pode ser maior que a final",
+			"message": "Idade inicial não pode ser maior que a final",
 		})
 		return
 	}
 
 	pacientes, err := pc.useCase.GetAllPacienteByAge(idadeInicialPaciente, idadeFinalPaciente)
-		if err != nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message":err.Error(),
-			})
-			return
-		}
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-		if pacientes == nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message": "Item não encontrado na base de dados",
-			})
-			return
-		}
+	if pacientes == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, pacientes)
 }
 
-func (pc *PacienteController) GetAllPacienteByRisk(ctx *gin.Context){
+func (pc *PacienteController) GetAllPacienteByRisk(ctx *gin.Context) {
 	risco := ctx.Param("risco")
-	if strings.TrimSpace(risco) == ""{
+	if strings.TrimSpace(risco) == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Risco não pode ser nulo",
 		})
@@ -199,59 +218,59 @@ func (pc *PacienteController) GetAllPacienteByRisk(ctx *gin.Context){
 	}
 
 	pacientes, err := pc.useCase.GetAllPacienteByRisk(risco)
-		if err != nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message":err.Error(),
-			})
-			return
-		}
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-		if pacientes == nil{
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"message": "Item não encontrado na base de dados",
-			})
-			return
-		}
+	if pacientes == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, pacientes)
 }
 
-func (pc *PacienteController) GetCountPacienteByRisk(ctx *gin.Context){
+func (pc *PacienteController) GetCountPacienteByRisk(ctx *gin.Context) {
 	riscos, err := pc.useCase.GetCountPacienteByRisk()
-	if err != nil{
+	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-				"message":err.Error(),
-			})
-			return
+			"message": err.Error(),
+		})
+		return
 	}
 
-	if riscos == nil{
+	if riscos == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-				"message": "Item não encontrado na base de dados",
-			})
-			return
+			"message": "Item não encontrado na base de dados",
+		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, riscos)
 }
 
-func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context){
+func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context) {
 	pacienteIdStr := ctx.Param("pacienteId")
 	pacienteId, err := strconv.Atoi(pacienteIdStr)
-	
-	if err != nil || pacienteId <= 0{
+
+	if err != nil || pacienteId <= 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-		"message": "Id inválido",
+			"message": "Id inválido",
 		})
 		return
 	}
 
 	resultadosFichas, err := pc.useCase.GetResultadosByPacienteId(pacienteId)
-	if err != nil{
+	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-				"message":err.Error(),
-			})
-			return
+			"message": err.Error(),
+		})
+		return
 	}
 
 	if resultadosFichas == nil{
@@ -263,47 +282,67 @@ func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context){
 }
 
 func (pc *PacienteController) GetLastConsultationByIdPaciente(ctx *gin.Context) {
-    pacienteIdStr := ctx.Param("pacienteId")
-    pacienteId, err := strconv.Atoi(pacienteIdStr)
-
-    if pacienteId <= 0 || err != nil{
-        ctx.JSON(http.StatusBadRequest, gin.H{
-            "message": "Id inválido",
-        })
-        return
-    }
-
-
-    consulta, err := pc.useCase.GetLastConsultationByIdPaciente(pacienteId)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{
-            "message": err.Error(),
-        })
-        return
-    }
-
-
-    ctx.JSON(http.StatusOK, consulta)
-}
-
-func (pu *PacienteController) GetLastFichaWithRiskByIdPaciente(ctx *gin.Context){
 	pacienteIdStr := ctx.Param("pacienteId")
 	pacienteId, err := strconv.Atoi(pacienteIdStr)
 
-	if pacienteId <= 0 || err != nil{
-        ctx.JSON(http.StatusBadRequest, gin.H{
-            "message": "Id inválido",
-        })
-        return
-    }
+	if pacienteId <= 0 || err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id inválido",
+		})
+		return
+	}
+
+	consulta, err := pc.useCase.GetLastConsultationByIdPaciente(pacienteId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, consulta)
+}
+
+func (pu *PacienteController) GetLastFichaWithRiskByIdPaciente(ctx *gin.Context) {
+	pacienteIdStr := ctx.Param("pacienteId")
+	pacienteId, err := strconv.Atoi(pacienteIdStr)
+
+	if pacienteId <= 0 || err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id inválido",
+		})
+		return
+	}
 
 	paciente, err := pu.useCase.GetLastFichaWithRiskByIdPaciente(pacienteId)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{
-            "message": err.Error(),
-        })
-        return
-    }
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, paciente)
+}
+
+func (pu *PacienteController) GetAllConsultasByIdPaciente(ctx *gin.Context) {
+	pacienteIdStr := ctx.Param("pacienteId")
+	pacienteId, err := strconv.Atoi(pacienteIdStr)
+
+	if pacienteId <= 0 || err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id paciente inválido",
+		})
+		return
+	}
+
+	consultas, err := pu.useCase.GetAllConsultasByIdPaciente(pacienteId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, consultas)
 }

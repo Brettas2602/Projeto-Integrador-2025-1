@@ -180,8 +180,8 @@ func (cr *ConsultasRepository) GetCountConsultasByAllMonths() ([]model.Consultas
     		consultas c
 		JOIN 
     		ubs u ON c.ubs_id = u.id
-		WHERE 
-    		u.id = 1  -- substitua pelo ID da UBS desejada
+		WHERE
+		   	u.id = 1  -- substitua pelo ID da UBS desejada
 		GROUP BY 
     		DATE_TRUNC('month', c.data)
 		ORDER BY 
