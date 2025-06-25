@@ -754,6 +754,7 @@ export default function EditFichaPage() {
                                         name="risco"
                                         value={item.risco}
                                         onChange={handleFichaChange}
+                                        checked={item.risco == ficha.risco}
                                     />
                                     <div>{item.risco}</div>
                                 </div>

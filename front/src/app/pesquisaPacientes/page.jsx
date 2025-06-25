@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { FiFilter } from "react-icons/fi";
+import { FiArrowLeft, FiFilter } from "react-icons/fi";
+import { MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PesquisaUsuarios() {
     const [tipoFiltro, setTipoFiltro] = useState("nome") // nome | idade | risco
@@ -36,14 +38,22 @@ export default function PesquisaUsuarios() {
             res = await axios.get(`http://localhost:8000/paciente/getbyage/${idadeMin}/${idadeMax}`)
         } else if (tipoFiltro === "risco" && risco) {
             res = await axios.get(`http://localhost:8000/paciente/getbyrisk/${risco}`)
-        }else res = await axios.get(`http://localhost:8000/pacientes`)
+        } else res = await axios.get(`http://localhost:8000/pacientes`)
 
         if (res) setPacientes(res.data)
     }
 
     return (
         <div className="container mx-auto px-10 py-4 space-y-6">
-            <h1 className="text-3xl text-center font-bold">Pesquisa de Usuários</h1>
+            <div className="flex justify-between w-full">
+                <Link href={"/dashboard"} className="w-[60px]">
+                    <FiArrowLeft className="w-10 h-fit" />
+                </Link>
+
+                <h1 className="text-3xl text-center font-bold">Pesquisa de Usuários</h1>
+
+                <div className="w-10"/>
+            </div>
 
             <div className="flex items-center gap-2">
                 {/* Campo dinâmico */}
@@ -120,22 +130,23 @@ export default function PesquisaUsuarios() {
             <div className="space-y-2 mt-4">
                 {
                     pacientes != null
-                    ?
-                    pacientes.map((paciente, i) => (
-                        <div key={i} className="flex justify-between p-3 border rounded bg-gray-50">
-                            <p className="w-1/4"><strong>Nome:</strong> {paciente.nome}</p>
-                            <p className="w-1/4"><strong>Idade:</strong> {paciente.idade}</p>
-                            <p className="w-1/4"><strong>Risco:</strong> {paciente.fichas[0].risco}</p>
-                            <button 
-                                className="bg-green-700 text-white p-2 rounded-xl" 
-                                onClick={() => router.push(`/editForm/${paciente.cpf}`)}
-                            >
-                                Editar Ficha
-                            </button>
-                        </div>
-                    ))
-                    :
-                    <p className=" text-center p-3 border rounded bg-gray-50">Nenhum paciente encontrado</p>
+                        ?
+                        pacientes.map((paciente, i) => (
+                            <div key={i} className="flex justify-between p-3 border rounded bg-gray-50">
+                                <p className="w-1/4"><strong>Nome:</strong> {paciente.nome}</p>
+                                <p className="w-1/4"><strong>Idade:</strong> {paciente.idade}</p>
+                                <p className="w-1/4"><strong>Risco:</strong> {paciente.fichas[0].risco}</p>
+                                <button
+                                    className="flex items-center gap-2 bg-green-700 text-white p-2 rounded-xl"
+                                    onClick={() => router.push(`/editForm/${paciente.cpf}`)}
+                                >
+                                    <MdOutlineEdit />
+                                    Editar Ficha
+                                </button>
+                            </div>
+                        ))
+                        :
+                        <p className=" text-center p-3 border rounded bg-gray-50">Nenhum paciente encontrado</p>
                 }
             </div>
         </div>

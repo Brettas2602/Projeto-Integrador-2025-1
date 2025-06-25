@@ -245,9 +245,5 @@ func (cr *ConsultasRepository) GetCountConsultasByAllMonths() ([]model.Consultas
 		consultas = append(consultas, consulta)
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	return consultas, err
 }
