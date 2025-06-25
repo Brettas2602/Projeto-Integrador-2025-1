@@ -62,6 +62,25 @@ func (pc *PacienteController) UpdatePaciente(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, paciente)
 }
 
+func (pc *PacienteController) GetAllPacientes(ctx *gin.Context) {
+	pacientes, err := pc.useCase.GetAllPacientes()
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if pacientes == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pacientes)
+}
+
 func (pc *PacienteController) GetPacienteById(ctx *gin.Context) {
 	pacienteIdStr := ctx.Param("pacienteId")
 	pacienteId, err := strconv.Atoi(pacienteIdStr)
@@ -154,9 +173,7 @@ func (pc *PacienteController) GetAllPacienteByName(ctx *gin.Context) {
 	}
 
 	if pacientes == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Item não encontrado na base de dados",
-		})
+		ctx.JSON(http.StatusAccepted, pacientes)
 		return
 	}
 
@@ -199,9 +216,7 @@ func (pc *PacienteController) GetAllPacienteByAge(ctx *gin.Context) {
 	}
 
 	if pacientes == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Item não encontrado na base de dados",
-		})
+		ctx.JSON(http.StatusAccepted, pacientes)
 		return
 	}
 
@@ -226,9 +241,7 @@ func (pc *PacienteController) GetAllPacienteByRisk(ctx *gin.Context) {
 	}
 
 	if pacientes == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "Item não encontrado na base de dados",
-		})
+		ctx.JSON(http.StatusAccepted, pacientes)
 		return
 	}
 
@@ -273,8 +286,10 @@ func (pc *PacienteController) GetResultadosByPacienteId(ctx *gin.Context) {
 		return
 	}
 
-	if resultadosFichas == nil{
-		ctx.JSON(http.StatusAccepted, resultadosFichas)
+	if resultadosFichas == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "Item não encontrado na base de dados",
+		})
 		return
 	}
 
