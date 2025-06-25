@@ -6,9 +6,11 @@ import (
 	"back/repository"
 	"back/useCase"
 
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"time")
+)
 
 func main() {
 	server := gin.Default()
@@ -21,7 +23,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	
+
 	dbConnection, err := db.ConnectDB()
 	if err != nil {
 		panic(err)
@@ -41,13 +43,14 @@ func main() {
 	ConsultaController := controller.NewConsultaController(ConsultaUseCase)
 
 	server.GET("/consulta/getallconsultas", ConsultaController.GetAllConsultas)
+	server.GET("/consulta/getallconsultasagendadas", ConsultaController.GetAllConsultasAgendadas)
 	server.GET("/consulta/getcountconsultasbyallmonths", ConsultaController.GetCountConsultasByAllMonths)
 	server.POST("/consulta/createconsulta", ConsultaController.CreateConsulta)
 
 	MedicoRepository := repository.NewMedicoRepository(dbConnection)
 	MedicoUseCase := useCase.NewMedicoUseCase(MedicoRepository, UbsRepository)
 	MedicoController := controller.NewMedicoController(MedicoUseCase)
-	
+
 	server.GET("/medico/:medicoCpf", MedicoController.GetMedicoByCpf)
 	server.POST("/medico", MedicoController.CreateMedico)
 
@@ -62,13 +65,13 @@ func main() {
 	ExameClinicoRepository := repository.NewExameClinicoRepository(dbConnection)
 	IdentificacaoLabRepository := repository.NewIdentificacaoLabRepository(dbConnection)
 	ResultadoRepository := repository.NewResultadoRepository(dbConnection)
-	
+
 	FichaRepository := repository.NewFichaRepository(dbConnection)
 	FichaUseCase := useCase.NewFichaUseCase(
 		FichaRepository,
-		AnamneseRepository, 
-		ExameClinicoRepository, 
-		IdentificacaoLabRepository, 
+		AnamneseRepository,
+		ExameClinicoRepository,
+		IdentificacaoLabRepository,
 		ResultadoRepository,
 	)
 	FichaController := controller.NewFichaRepository(FichaUseCase)
@@ -78,12 +81,12 @@ func main() {
 
 	PacienteRepository := repository.NewPacienteRepository(dbConnection)
 	PacienteUseCase := useCase.NewPacienteUseCase(
-		PacienteRepository, 
-		EnderecoRepository, 
-		FichaRepository, 
-		AnamneseRepository, 
-		ExameClinicoRepository, 
-		IdentificacaoLabRepository, 
+		PacienteRepository,
+		EnderecoRepository,
+		FichaRepository,
+		AnamneseRepository,
+		ExameClinicoRepository,
+		IdentificacaoLabRepository,
 		ResultadoRepository,
 		ConsultaRepository,
 	)
