@@ -108,6 +108,42 @@ func (cr *ConsultasRepository) GetAllConsultas() ([]model.Consultas, error) {
 	return consultasList, nil
 }
 
+func (cr *ConsultasRepository) GetAllConsultasAgendadas()([]model.Consultas, error){
+	rows, err := cr.connection.Query("SELECT * FROM consultas WHERE DATE(data) >= CURRENT_DATE ORDER BY data ASC")
+	if err != nil {
+		return nil, err
+	}
+
+	var consultasList []model.Consultas
+
+	for rows.Next() {
+		var consulta model.Consultas
+
+		err := rows.Scan(
+			&consulta.ID,
+			&consulta.PacienteID,
+			&consulta.Data,
+			&consulta.UbsID,
+		)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil, nil
+			}
+
+			return nil, err
+		}
+
+		consultasList = append(consultasList, consulta)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return consultasList, nil
+}
+
 func (cr *ConsultasRepository) GetLastConsultationByIdPaciente(id int) (*model.Consultas, error) {
 	query, err := cr.connection.Prepare("SELECT * FROM consultas WHERE paciente_id = $1 ORDER BY id DESC LIMIT 1")
 	if err != nil {

@@ -33,6 +33,15 @@ func (cu *ConsultaUseCase) GetAllConsultas() ([]model.Consultas, error){
 	return consultas, nil
 }
 
+func (cu *ConsultaUseCase) GetAllConsultasAgendadas()([]model.Consultas, error){
+		consultas, err := cu.repository.GetAllConsultasAgendadas()
+	if err != nil{
+		return nil, err
+	}	
+
+	return consultas, nil
+}
+
 func (cu *ConsultaUseCase) GetCountConsultasByAllMonths() ([]model.ConsultasPorMes, error) {
 	consultas, err := cu.repository.GetCountConsultasByAllMonths()
 	if err != nil {
